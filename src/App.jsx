@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, ChevronLeft, ChevronRight, Leaf, Heart, Globe, ArrowRight, Instagram, Facebook, Twitter, Linkedin, Users, MapPin } from 'lucide-react';
+import { Menu, X, ChevronLeft, ChevronRight, Leaf, Heart, Globe, ArrowRight, Instagram, Facebook, Twitter, Linkedin, Users, MapPin, XCircle, ShoppingBag, Package } from 'lucide-react';
 
 // --- Color Palette Constants ---
 const COLORS = {
@@ -9,42 +9,31 @@ const COLORS = {
   white: '#ffffff'
 };
 
-// --- Mock Data ---
+// --- Products Data ---
 const PRODUCTS = [
   {
     id: 1,
-    name: "Darjeeling First Flush",
+    name: "Handrolled Premium Green Tea",
     category: "Organic Tea",
-    image: "https://images.unsplash.com/photo-1594631252845-29fc4cc8cde9?q=80&w=800&auto=format&fit=crop",
-    desc: "Delicate, floral notes harvested in early spring."
+    image: "/assets/Handrolled_Premium_Green_Tea.png",
+    desc: "Prepared by the skilled women of the producer group residing in the Panighata Tea Garden, our green tea is a testament to true craftsmanship.",
+    variants: [
+      { size: "50g", price: 150, inStock: true }
+    ],
+    inStock: true,
+    teaGarden: "Panighata Tea Estate"
   },
   {
     id: 2,
-    name: "Himalayan Wild Honey",
-    category: "Pantry Staples",
-    image: "https://images.unsplash.com/photo-1587049352846-4a222e784d38?q=80&w=800&auto=format&fit=crop",
-    desc: "Raw, unfiltered honey from the high altitude forests."
-  },
-  {
-    id: 3,
-    name: "Handwoven Bamboo Basket",
-    category: "Crafts",
-    image: "https://images.unsplash.com/photo-1616606024843-22874744cb89?q=80&w=800&auto=format&fit=crop",
-    desc: "Crafted by local artisans using sustainable bamboo."
-  },
-  {
-    id: 4,
-    name: "Spiced Cardamom Chai",
-    category: "Blends",
-    image: "https://images.unsplash.com/photo-1576092768241-dec231847233?q=80&w=800&auto=format&fit=crop",
-    desc: "A warming blend of premium black tea and spices."
-  },
-  {
-    id: 5,
-    name: "Turmeric Root Powder",
-    category: "Spices",
-    image: "https://images.unsplash.com/photo-1615485500704-8e99099928b3?q=80&w=800&auto=format&fit=crop",
-    desc: "High curcumin content, grown without pesticides."
+    name: "Handrolled Orthodox Rose Tea",
+    category: "Organic Tea",
+    image: "/assets/Handrolled_Orthodox_Rose_Tea.png",
+    desc: "Hand-blended by the skilled women of the producer group residing in the Panighata Tea Garden, our Orthodox Rose Tea is a royal indulgence and a sensory masterpiece.",
+    variants: [
+      { size: "50g", price: 150, inStock: true }
+    ],
+    inStock: true,
+    teaGarden: "Panighata Tea Estate"
   }
 ];
 
@@ -116,7 +105,200 @@ const SectionHeading = ({ children, align = "center" }) => (
   </h2>
 );
 
-const ProductCarousel = () => {
+// --- Product Detail Modal Component ---
+const ProductDetailModal = ({ product, isOpen, onClose }) => {
+  const [selectedVariant, setSelectedVariant] = useState(null);
+
+  useEffect(() => {
+    if (product && product.variants && product.variants.length > 0) {
+      setSelectedVariant(product.variants[0]);
+    }
+  }, [product]);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
+
+  if (!isOpen || !product) return null;
+
+  return (
+    <div 
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+      onClick={onClose}
+    >
+      {/* Backdrop with blur */}
+      <div 
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300"
+        style={{ opacity: isOpen ? 1 : 0 }}
+      />
+      
+      {/* Modal Content */}
+      <div 
+        className="relative w-full max-w-6xl max-h-[90vh] overflow-y-auto rounded-3xl shadow-2xl transform transition-all duration-500"
+        style={{ 
+          backgroundColor: COLORS.cream,
+          transform: isOpen ? 'scale(1) rotateY(0deg)' : 'scale(0.9) rotateY(10deg)'
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Close Button */}
+        <button
+          onClick={onClose}
+          className="absolute top-6 right-6 z-20 w-12 h-12 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-lg hover:bg-white transition-all hover:scale-110"
+          style={{ color: COLORS.darkGreen }}
+        >
+          <XCircle size={24} />
+        </button>
+
+        <div className="grid md:grid-cols-2 gap-0">
+          {/* Left Side - Image with 3D Effect */}
+          <div className="relative h-[400px] md:h-[600px] overflow-hidden rounded-t-3xl md:rounded-l-3xl md:rounded-tr-none bg-gradient-to-br from-gray-100 to-gray-200">
+            <div className="absolute inset-0 [perspective:1000px] group">
+              <div className="relative w-full h-full transform transition-transform duration-700 group-hover:[transform:rotateY(5deg)_rotateX(2deg)]">
+                <img 
+                  src={product.image} 
+                  alt={product.name}
+                  className="w-full h-full object-contain p-8 drop-shadow-2xl"
+                />
+              </div>
+            </div>
+            {/* Decorative Elements */}
+            <div className="absolute top-4 left-4 px-4 py-2 rounded-full backdrop-blur-md bg-white/80 shadow-lg">
+              <span className="text-xs font-bold tracking-wider uppercase" style={{ color: COLORS.darkGreen }}>
+                {product.category}
+              </span>
+            </div>
+            {/* Floating Badge */}
+            <div className="absolute bottom-6 left-6 px-6 py-3 rounded-2xl backdrop-blur-md bg-white/90 shadow-xl">
+              <div className="flex items-center space-x-2">
+                <MapPin size={18} style={{ color: COLORS.goldenYellow }} />
+                <span className="text-sm font-bold" style={{ color: COLORS.darkGreen }}>
+                  {product.teaGarden}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Side - Product Details */}
+          <div className="p-8 md:p-12 flex flex-col justify-between" style={{ backgroundColor: COLORS.white }}>
+            <div>
+              <h2 className="text-4xl md:text-5xl font-serif font-bold mb-4" style={{ color: COLORS.darkGreen }}>
+                {product.name}
+              </h2>
+              
+              <p className="text-lg text-gray-700 leading-relaxed mb-8">
+                {product.desc}
+              </p>
+
+              {/* Stock Status */}
+              {!product.inStock ? (
+                <div className="mb-8 p-4 rounded-xl bg-red-50 border-2 border-red-200">
+                  <div className="flex items-center space-x-2">
+                    <XCircle size={20} className="text-red-600" />
+                    <span className="font-bold text-red-600">Out of Stock</span>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  {/* Variants Selection */}
+                  {product.variants && product.variants.length > 0 && (
+                    <div className="mb-8">
+                      <h3 className="text-sm font-bold tracking-wider uppercase mb-4" style={{ color: COLORS.darkGreen }}>
+                        Select Variant
+                      </h3>
+                      <div className="grid grid-cols-2 gap-4">
+                        {product.variants.map((variant, idx) => (
+                          <button
+                            key={idx}
+                            onClick={() => setSelectedVariant(variant)}
+                            className={`p-4 rounded-xl border-2 transition-all duration-300 transform hover:scale-105 ${
+                              selectedVariant === variant 
+                                ? 'shadow-lg' 
+                                : 'hover:shadow-md'
+                            }`}
+                            style={{
+                              borderColor: selectedVariant === variant ? COLORS.goldenYellow : '#e5e7eb',
+                              backgroundColor: selectedVariant === variant ? COLORS.cream : 'white'
+                            }}
+                          >
+                            <div className="flex items-center justify-between mb-2">
+                              <Package size={18} style={{ color: COLORS.darkGreen }} />
+                              <span className="text-xs font-bold uppercase" style={{ color: COLORS.darkGreen }}>
+                                {variant.size}
+                              </span>
+                            </div>
+                            {variant.inStock ? (
+                              <div className="text-2xl font-serif font-bold" style={{ color: COLORS.goldenYellow }}>
+                                ₹{variant.price}
+                              </div>
+                            ) : (
+                              <div className="text-sm font-bold text-red-600">Out of Stock</div>
+                            )}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Price Display */}
+                  {selectedVariant && selectedVariant.inStock && (
+                    <div className="mb-8 p-6 rounded-2xl bg-gradient-to-br" style={{ 
+                      background: `linear-gradient(135deg, ${COLORS.cream} 0%, ${COLORS.white} 100%)`,
+                      border: `2px solid ${COLORS.goldenYellow}`
+                    }}>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-bold tracking-wider uppercase mb-1" style={{ color: COLORS.darkGreen }}>
+                            Price
+                          </p>
+                          <p className="text-4xl font-serif font-bold" style={{ color: COLORS.goldenYellow }}>
+                            ₹{selectedVariant.price}
+                          </p>
+                        </div>
+                        <div className="w-16 h-16 rounded-full flex items-center justify-center shadow-lg" style={{ backgroundColor: COLORS.goldenYellow }}>
+                          <Leaf size={32} style={{ color: COLORS.darkGreen }} />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+
+            {/* Action Buttons */}
+            <div className="space-y-4">
+              {product.inStock && selectedVariant && selectedVariant.inStock ? (
+                <button
+                  className="w-full py-4 rounded-xl font-bold text-lg tracking-wide transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2"
+                  style={{ backgroundColor: COLORS.darkGreen, color: COLORS.white }}
+                >
+                  <ShoppingBag size={24} />
+                  <span>Add to Cart</span>
+                </button>
+              ) : null}
+              <button
+                onClick={onClose}
+                className="w-full py-4 rounded-xl font-bold text-lg tracking-wide transition-all duration-300 border-2 hover:bg-gray-50"
+                style={{ borderColor: COLORS.darkGreen, color: COLORS.darkGreen }}
+              >
+                Continue Shopping
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const ProductCarousel = ({ onProductClick }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(1);
 
@@ -156,46 +338,98 @@ const ProductCarousel = () => {
               className="flex-shrink-0 px-4"
               style={{ width: `${100 / itemsPerPage}%` }}
             >
-              <div className="group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 h-full border border-opacity-20" style={{ borderColor: COLORS.darkGreen }}>
-                <div className="relative h-64 overflow-hidden bg-gray-100">
-                  <img 
-                    src={product.image} 
-                    alt={product.name} 
-                    className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
-                  />
-                  <div className="absolute top-4 left-4">
-                    <span className="px-3 py-1 text-xs font-bold tracking-wider uppercase rounded-full" style={{ backgroundColor: COLORS.cream, color: COLORS.darkGreen }}>
-                      {product.category}
-                    </span>
+              <div className="group relative bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 h-full border-2 border-transparent hover:border-opacity-30" style={{ borderColor: COLORS.darkGreen }}>
+                {/* 3D Card Effect */}
+                <div className="relative [perspective:1000px] h-full">
+                  <div className="relative transform transition-transform duration-500 group-hover:[transform:rotateY(2deg)_rotateX(-2deg)] [transform-style:preserve-3d]">
+                    <div className="relative h-72 overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100">
+                      <img 
+                        src={product.image} 
+                        alt={product.name} 
+                        className="w-full h-full object-contain p-6 transform group-hover:scale-110 transition-transform duration-700"
+                      />
+                      {/* Gradient Overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-white/60 via-transparent to-transparent"></div>
+                      
+                      {/* Category Badge */}
+                      <div className="absolute top-4 left-4">
+                        <div className="px-4 py-2 rounded-full backdrop-blur-md bg-white/90 shadow-lg">
+                          <span className="text-xs font-bold tracking-wider uppercase" style={{ color: COLORS.darkGreen }}>
+                            {product.category}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Stock Badge */}
+                      {!product.inStock && (
+                        <div className="absolute top-4 right-4">
+                          <div className="px-3 py-1.5 rounded-full bg-red-500/90 backdrop-blur-md shadow-lg">
+                            <span className="text-xs font-bold text-white">Out of Stock</span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="p-6 flex flex-col">
+                      <h3 className="text-xl font-serif font-bold mb-2" style={{ color: COLORS.darkGreen }}>
+                        {product.name}
+                      </h3>
+                      <p className="text-gray-600 mb-4 text-sm line-clamp-2 flex-grow">
+                        {product.desc}
+                      </p>
+                      
+                      {/* Price Preview */}
+                      {product.inStock && product.variants && product.variants.length > 0 && (
+                        <div className="mb-4">
+                          <p className="text-2xl font-serif font-bold" style={{ color: COLORS.goldenYellow }}>
+                            ₹{product.variants[0].price}
+                          </p>
+                          <p className="text-xs text-gray-500">{product.variants[0].size}</p>
+                        </div>
+                      )}
+
+                      <button 
+                        onClick={() => onProductClick(product)}
+                        className="mt-auto w-full py-3 rounded-xl font-bold text-sm tracking-wide transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-2 group/btn"
+                        style={{ 
+                          backgroundColor: COLORS.darkGreen, 
+                          color: COLORS.white 
+                        }}
+                      >
+                        <span>View Details</span>
+                        <ArrowRight size={16} className="transform group-hover/btn:translate-x-1 transition-transform" />
+                      </button>
+                    </div>
                   </div>
                 </div>
-                <div className="p-6 flex flex-col items-center text-center">
-                  <h3 className="text-xl font-serif font-bold mb-2" style={{ color: COLORS.darkGreen }}>{product.name}</h3>
-                  <p className="text-gray-600 mb-6 text-sm line-clamp-2">{product.desc}</p>
-                  <button className="mt-auto text-sm font-bold border-b-2 pb-1 hover:opacity-75 transition-opacity" style={{ color: COLORS.goldenYellow, borderColor: COLORS.goldenYellow }}>
-                    View Details
-                  </button>
-                </div>
+
+                {/* Hover Glow Effect */}
+                <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10 blur-2xl"
+                     style={{ backgroundColor: COLORS.goldenYellow }}></div>
               </div>
             </div>
           ))}
         </div>
       </div>
 
-      <button 
-        onClick={prevSlide}
-        className="absolute left-0 top-1/2 -translate-y-1/2 bg-white p-3 rounded-full shadow-lg hover:bg-gray-50 transition-colors z-10 disabled:opacity-50"
-        style={{ color: COLORS.darkGreen }}
-      >
-        <ChevronLeft size={24} />
-      </button>
-      <button 
-        onClick={nextSlide}
-        className="absolute right-0 top-1/2 -translate-y-1/2 bg-white p-3 rounded-full shadow-lg hover:bg-gray-50 transition-colors z-10 disabled:opacity-50"
-        style={{ color: COLORS.darkGreen }}
-      >
-        <ChevronRight size={24} />
-      </button>
+      {PRODUCTS.length > itemsPerPage && (
+        <>
+          <button 
+            onClick={prevSlide}
+            className="absolute left-0 top-1/2 -translate-y-1/2 bg-white p-3 rounded-full shadow-xl hover:bg-gray-50 transition-all transform hover:scale-110 z-10 disabled:opacity-50"
+            style={{ color: COLORS.darkGreen }}
+          >
+            <ChevronLeft size={24} />
+          </button>
+          <button 
+            onClick={nextSlide}
+            className="absolute right-0 top-1/2 -translate-y-1/2 bg-white p-3 rounded-full shadow-xl hover:bg-gray-50 transition-all transform hover:scale-110 z-10 disabled:opacity-50"
+            style={{ color: COLORS.darkGreen }}
+          >
+            <ChevronRight size={24} />
+          </button>
+        </>
+      )}
     </div>
   );
 };
@@ -203,6 +437,8 @@ const ProductCarousel = () => {
 export default function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -214,6 +450,16 @@ export default function App() {
     setIsMenuOpen(false);
     const element = document.getElementById(id);
     if (element) element.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleProductClick = (product) => {
+    setSelectedProduct(product);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setTimeout(() => setSelectedProduct(null), 300);
   };
 
   return (
@@ -309,8 +555,15 @@ export default function App() {
       {/* --- Products Section --- */}
       <section id="collection" className="py-20 md:py-32">
         <SectionHeading>Collection</SectionHeading>
-        <ProductCarousel />
+        <ProductCarousel onProductClick={handleProductClick} />
       </section>
+
+      {/* Product Detail Modal */}
+      <ProductDetailModal 
+        product={selectedProduct} 
+        isOpen={isModalOpen} 
+        onClose={handleCloseModal} 
+      />
 
       {/* --- Our Tea Gardens Section --- */}
       <section id="our-tea-gardens" className="py-20 md:py-32 bg-white">
