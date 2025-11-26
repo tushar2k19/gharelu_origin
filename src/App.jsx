@@ -323,25 +323,56 @@ export default function App() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {TEA_GARDENS.map((garden, idx) => (
-              <div key={idx} className="group relative rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 bg-gray-50">
-                 <div className="h-48 overflow-hidden">
-                    <img 
-                      src={garden.image} 
-                      alt={garden.name} 
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
-                    />
-                 </div>
-                 <div className="p-8">
-                    <div className="flex items-center mb-4">
-                       <MapPin className="mr-2" size={18} style={{ color: COLORS.goldenYellow }} />
-                       <h3 className="text-xl font-serif font-bold" style={{ color: COLORS.darkGreen }}>{garden.name}</h3>
+              <div key={idx} className="group rounded-xl [perspective:1000px] relative" style={{height: '380px'}}>
+                <div className="relative w-full h-full transition-transform duration-700 [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)]">
+                  {/* Front Face */}
+                  <div className="absolute w-full h-full [backface-visibility:hidden] rounded-xl overflow-hidden shadow-lg bg-gray-50 flex flex-col">
+                    <div className="h-48 overflow-hidden">
+                      <img 
+                        src={garden.image} 
+                        alt={garden.name} 
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                      />
                     </div>
-                    <p className="text-gray-600 text-sm leading-relaxed">{garden.desc}</p>
-                 </div>
-                 <div 
-                   className="h-2 w-full absolute bottom-0 left-0 origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-500" 
-                   style={{ backgroundColor: COLORS.goldenYellow }}
-                 ></div>
+                    <div className="p-6 flex-grow flex flex-col">
+                      <div className="flex items-center mb-3">
+                        <MapPin className="mr-2 flex-shrink-0" size={18} style={{ color: COLORS.goldenYellow }} />
+                        <h3 className="text-xl font-serif font-bold" style={{ color: COLORS.darkGreen }}>{garden.name}</h3>
+                      </div>
+                      <p className="text-gray-600 text-sm leading-relaxed line-clamp-3 flex-grow">{garden.desc}</p>
+                    </div>
+                  </div>
+ 
+                  {/* Back Face */}
+                  <div className="absolute w-full h-full [backface-visibility:hidden] [transform:rotateY(180deg)] rounded-xl overflow-hidden shadow-lg flex flex-col p-8 relative">
+                    {/* Background Image with Overlay */}
+                    <div className="absolute inset-0 z-0">
+                      <img 
+                        src={garden.image} 
+                        alt={garden.name} 
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-white opacity-70"></div>
+                    </div>
+                    {/* Content */}
+                    <div className="relative z-10 flex flex-col h-full">
+                      <div className="flex items-center mb-4">
+                        <MapPin className="mr-2 flex-shrink-0" size={18} style={{ color: COLORS.goldenYellow }} />
+                        <h3 className="text-xl font-serif font-bold" style={{ color: COLORS.darkGreen }}>{garden.name}</h3>
+                      </div>
+                      <div className="overflow-y-auto flex-grow">
+                        <p className="text-gray-800 text-sm leading-relaxed font-bold">{garden.desc}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {/* Fixed Yellow Line - Visible on both sides */}
+                <div className="absolute bottom-0 left-0 right-0 h-2 rounded-b-xl overflow-hidden z-10">
+                  <div 
+                    className="h-full w-0 group-hover:w-full transition-all duration-500 ease-out origin-left" 
+                    style={{ backgroundColor: COLORS.goldenYellow }}
+                  ></div>
+                </div>
               </div>
             ))}
           </div>
