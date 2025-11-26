@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Menu, X, ChevronLeft, ChevronRight, Leaf, Heart, Globe, ArrowRight, Instagram, Facebook, Twitter, Linkedin, Users, MapPin, XCircle, ShoppingBag, Package } from 'lucide-react';
 
 // --- Color Palette Constants ---
@@ -445,137 +445,277 @@ const ProductDetailModal = ({ product, isOpen, onClose }) => {
 };
 
 const ProductCarousel = ({ onProductClick }) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [itemsPerPage, setItemsPerPage] = useState(1);
+  const [isPaused, setIsPaused] = useState(false);
+  const [cardWidth, setCardWidth] = useState(450);
+  const scrollContainerRef = useRef(null);
+  const animationRef = useRef(null);
+  const scrollPositionRef = useRef(0);
+
+  // Duplicate products for seamless infinite scroll (3 sets for smooth looping)
+  const duplicatedProducts = [...PRODUCTS, ...PRODUCTS, ...PRODUCTS];
 
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth >= 1024) setItemsPerPage(3);
-      else if (window.innerWidth >= 640) setItemsPerPage(2);
-      else setItemsPerPage(1);
+      if (window.innerWidth >= 1024) {
+        setCardWidth(450); // Show ~2.75-3 cards at once on desktop
+      } else if (window.innerWidth >= 640) {
+        setCardWidth(380); // Show ~2 cards on tablet
+      } else {
+        setCardWidth(340); // Show ~1 card on mobile
+      }
     };
     handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const nextSlide = () => {
-    setCurrentIndex((prev) => 
-      prev + itemsPerPage >= PRODUCTS.length ? 0 : prev + 1
-    );
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const scrollSpeed = 0.7; // pixels per frame (increased for faster auto-scroll)
+    
+    const animate = () => {
+      if (!isPaused && container) {
+        scrollPositionRef.current += scrollSpeed;
+        
+        // Reset position when we've scrolled one full set of products
+        const singleSetWidth = container.scrollWidth / 3;
+        if (scrollPositionRef.current >= singleSetWidth) {
+          scrollPositionRef.current = 0;
+        }
+        
+        container.style.transform = `translateX(-${scrollPositionRef.current}px)`;
+      }
+      animationRef.current = requestAnimationFrame(animate);
+    };
+
+    animationRef.current = requestAnimationFrame(animate);
+    
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, [isPaused]);
+
+  // Smooth scroll animation function
+  const smoothScrollTo = (targetPosition, duration = 500) => {
+    setIsPaused(true);
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const startPosition = scrollPositionRef.current;
+    const distance = targetPosition - startPosition;
+    const startTime = performance.now();
+    let animationFrameId;
+
+    const animate = (currentTime) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      
+      // Easing function (ease-in-out)
+      const ease = progress < 0.5
+        ? 2 * progress * progress
+        : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+      
+      scrollPositionRef.current = startPosition + distance * ease;
+      container.style.transform = `translateX(-${scrollPositionRef.current}px)`;
+      
+      if (progress < 1) {
+        animationFrameId = requestAnimationFrame(animate);
+      } else {
+        // Resume auto-scroll after smooth scroll completes + 2 seconds
+        setTimeout(() => setIsPaused(false), 2000);
+      }
+    };
+
+    animationFrameId = requestAnimationFrame(animate);
+    
+    return () => {
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+      }
+    };
   };
 
-  const prevSlide = () => {
-    setCurrentIndex((prev) => 
-      prev === 0 ? Math.max(0, PRODUCTS.length - itemsPerPage) : prev - 1
-    );
+  // Manual scroll functions with smooth animation
+  const scrollLeft = () => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+    
+    const scrollAmount = cardWidth + 40; // card width + padding
+    const targetPosition = Math.max(0, scrollPositionRef.current - scrollAmount);
+    smoothScrollTo(targetPosition);
+  };
+
+  const scrollRight = () => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+    
+    const scrollAmount = cardWidth + 40; // card width + padding
+    const singleSetWidth = container.scrollWidth / 3;
+    const targetPosition = Math.min(singleSetWidth - 1, scrollPositionRef.current + scrollAmount);
+    smoothScrollTo(targetPosition);
   };
 
   return (
-    <div className="relative px-4 md:px-12 w-full max-w-7xl mx-auto">
+    <div className="relative w-full max-w-7xl mx-auto"
+         onMouseEnter={() => setIsPaused(true)}
+         onMouseLeave={() => setIsPaused(false)}>
+      {/* Gradient Fade Overlays */}
+      <div className="absolute left-0 top-0 bottom-0 w-32 z-10 pointer-events-none"
+           style={{ background: `linear-gradient(to right, ${COLORS.cream}, transparent)` }}></div>
+      <div className="absolute right-0 top-0 bottom-0 w-32 z-10 pointer-events-none"
+           style={{ background: `linear-gradient(to left, ${COLORS.cream}, transparent)` }}></div>
+
       <div className="overflow-hidden py-8">
         <div 
-          className="flex transition-transform duration-500 ease-out"
-          style={{ transform: `translateX(-${currentIndex * (100 / itemsPerPage)}%)` }}
+          ref={scrollContainerRef}
+          className="flex"
+          style={{ willChange: 'transform' }}
         >
-          {PRODUCTS.map((product) => (
+          {duplicatedProducts.map((product, idx) => (
             <div 
-              key={product.id} 
-              className="flex-shrink-0 px-4"
-              style={{ width: `${100 / itemsPerPage}%` }}
+              key={`${product.id}-${idx}`} 
+              className="flex-shrink-0 px-5"
+              style={{ width: `${cardWidth}px`, minWidth: `${cardWidth}px` }}
             >
-              <div className="group relative bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 h-full border-2 border-transparent hover:border-opacity-30" style={{ borderColor: COLORS.darkGreen }}>
-                {/* 3D Card Effect */}
+              <div className="group relative bg-white rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 h-full border border-gray-200 hover:border-opacity-50" 
+                   style={{ borderColor: COLORS.darkGreen }}>
+                {/* 3D Card Effect with Enhanced Design */}
                 <div className="relative [perspective:1000px] h-full">
-                  <div className="relative transform transition-transform duration-500 group-hover:[transform:rotateY(2deg)_rotateX(-2deg)] [transform-style:preserve-3d]">
-                    <div className="relative h-72 overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100">
+                  <div className="relative transform transition-all duration-500 group-hover:[transform:rotateY(3deg)_rotateX(-2deg)_translateY(-8px)] [transform-style:preserve-3d]">
+                    {/* Image Container with Modern Gradient */}
+                    <div className="relative h-56 overflow-hidden bg-gradient-to-br from-gray-50 via-white to-gray-50">
+                      <div className="absolute inset-0 bg-gradient-to-t from-white/80 via-transparent to-transparent z-10"></div>
                       <img 
                         src={product.image} 
                         alt={product.name} 
-                        className="w-full h-full object-contain p-6 transform group-hover:scale-110 transition-transform duration-700"
+                        className="w-full h-full object-contain p-5 transform group-hover:scale-110 transition-transform duration-700 relative z-0"
                       />
-                      {/* Gradient Overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-white/60 via-transparent to-transparent"></div>
                       
-                      {/* Category Badge */}
-                      <div className="absolute top-4 left-4">
-                        <div className="px-4 py-2 rounded-full backdrop-blur-md bg-white/90 shadow-lg">
+                      {/* Modern Category Badge */}
+                      <div className="absolute top-3 left-3 z-20">
+                        <div className="px-3 py-1.5 rounded-full backdrop-blur-lg bg-white/95 shadow-xl border border-white/50">
                           <span className="text-xs font-bold tracking-wider uppercase" style={{ color: COLORS.darkGreen }}>
                             {product.category}
                           </span>
                         </div>
                       </div>
 
-                      {/* Stock Badge */}
+                      {/* Stock Badge with Modern Design */}
                       {!product.inStock && (
-                        <div className="absolute top-4 right-4">
-                          <div className="px-3 py-1.5 rounded-full bg-red-500/90 backdrop-blur-md shadow-lg">
+                        <div className="absolute top-3 right-3 z-20">
+                          <div className="px-3 py-1.5 rounded-full bg-gradient-to-r from-red-500 to-red-600 backdrop-blur-lg shadow-xl border border-red-400/50">
                             <span className="text-xs font-bold text-white">Out of Stock</span>
                           </div>
                         </div>
                       )}
+
+                      {/* Decorative Corner Element */}
+                      <div className="absolute top-0 right-0 w-16 h-16 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <div className="absolute top-0 right-0 w-full h-full" 
+                             style={{ 
+                               background: `radial-gradient(circle at top right, ${COLORS.goldenYellow}, transparent)`,
+                               transform: 'rotate(45deg)'
+                             }}></div>
+                      </div>
                     </div>
                     
-                    <div className="p-6 flex flex-col">
-                      <h3 className="text-xl font-serif font-bold mb-2" style={{ color: COLORS.darkGreen }}>
+                    {/* Content Section with Enhanced Design */}
+                    <div className="p-5 flex flex-col bg-white relative">
+                      {/* Subtle Background Pattern */}
+                      <div className="absolute inset-0 opacity-[0.02]"
+                           style={{ 
+                             backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+                           }}></div>
+                      
+                      <h3 className="text-lg font-serif font-bold mb-2 relative z-10" style={{ color: COLORS.darkGreen }}>
                         {product.name}
                       </h3>
-                      <p className="text-gray-600 mb-4 text-sm line-clamp-2 flex-grow">
+                      <p className="text-gray-600 mb-3 text-sm line-clamp-2 flex-grow relative z-10 leading-relaxed">
                         {product.desc}
                       </p>
                       
-                      {/* Price Preview */}
+                      {/* Enhanced Price Display */}
                       {product.inStock && product.variants && product.variants.length > 0 && (
-                        <div className="mb-4">
-                          <p className="text-2xl font-serif font-bold" style={{ color: COLORS.goldenYellow }}>
-                            ₹{product.variants[0].price}
-                          </p>
-                          <p className="text-xs text-gray-500">{product.variants[0].size}</p>
+                        <div className="mb-3 relative z-10">
+                          <div className="flex items-baseline space-x-2">
+                            <p className="text-2xl font-serif font-bold" style={{ color: COLORS.goldenYellow }}>
+                              ₹{product.variants[0].price}
+                            </p>
+                          </div>
+                          <p className="text-xs text-gray-500 mt-0.5 font-medium">{product.variants[0].size}</p>
                         </div>
                       )}
 
+                      {/* Modern Button Design */}
                       <button 
                         onClick={() => onProductClick(product)}
-                        className="mt-auto w-full py-3 rounded-xl font-bold text-sm tracking-wide transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-2 group/btn"
+                        className="mt-auto w-full py-2.5 rounded-xl font-bold text-sm tracking-wide transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center space-x-2 group/btn relative z-10 shadow-lg hover:shadow-xl"
                         style={{ 
-                          backgroundColor: COLORS.darkGreen, 
+                          background: `linear-gradient(135deg, ${COLORS.darkGreen} 0%, #025a2f 100%)`,
                           color: COLORS.white 
                         }}
                       >
                         <span>View Details</span>
                         <ArrowRight size={16} className="transform group-hover/btn:translate-x-1 transition-transform" />
+                        {/* Button Shine Effect */}
+                        <div className="absolute inset-0 rounded-xl opacity-0 group-hover/btn:opacity-100 transition-opacity bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12" 
+                             style={{ animation: 'shimmer 2s infinite' }}></div>
                       </button>
                     </div>
                   </div>
                 </div>
 
-                {/* Hover Glow Effect */}
-                <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10 blur-2xl"
-                     style={{ backgroundColor: COLORS.goldenYellow }}></div>
+                {/* Enhanced Hover Glow Effect */}
+                <div className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-30 transition-opacity duration-500 -z-10 blur-3xl"
+                     style={{ 
+                       background: `radial-gradient(circle at center, ${COLORS.goldenYellow}, ${COLORS.darkGreen})`,
+                       transform: 'scale(1.1)'
+                     }}></div>
+
+                {/* Subtle Border Glow on Hover */}
+                <div className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                     style={{ 
+                       boxShadow: `0 0 0 2px ${COLORS.goldenYellow}40, 0 0 20px ${COLORS.goldenYellow}20`
+                     }}></div>
               </div>
             </div>
           ))}
         </div>
       </div>
 
-      {PRODUCTS.length > itemsPerPage && (
-        <>
-          <button 
-            onClick={prevSlide}
-            className="absolute left-0 top-1/2 -translate-y-1/2 bg-white p-3 rounded-full shadow-xl hover:bg-gray-50 transition-all transform hover:scale-110 z-10 disabled:opacity-50"
-            style={{ color: COLORS.darkGreen }}
-          >
-            <ChevronLeft size={24} />
-          </button>
-          <button 
-            onClick={nextSlide}
-            className="absolute right-0 top-1/2 -translate-y-1/2 bg-white p-3 rounded-full shadow-xl hover:bg-gray-50 transition-all transform hover:scale-110 z-10 disabled:opacity-50"
-            style={{ color: COLORS.darkGreen }}
-          >
-            <ChevronRight size={24} />
-          </button>
-        </>
-      )}
+      {/* Navigation Arrows */}
+      <button 
+        onClick={scrollLeft}
+        className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/95 backdrop-blur-md p-3 rounded-full shadow-xl hover:bg-white transition-all transform hover:scale-110 z-30 border border-gray-200"
+        style={{ color: COLORS.darkGreen }}
+        aria-label="Scroll left"
+      >
+        <ChevronLeft size={24} />
+      </button>
+      <button 
+        onClick={scrollRight}
+        className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/95 backdrop-blur-md p-3 rounded-full shadow-xl hover:bg-white transition-all transform hover:scale-110 z-30 border border-gray-200"
+        style={{ color: COLORS.darkGreen }}
+        aria-label="Scroll right"
+      >
+        <ChevronRight size={24} />
+      </button>
+
+      {/* Add CSS Animation for shimmer */}
+      <style>{`
+        @keyframes shimmer {
+          0% {
+            transform: translateX(-100%) skewX(-12deg);
+          }
+          100% {
+            transform: translateX(200%) skewX(-12deg);
+          }
+        }
+      `}</style>
     </div>
   );
 };
