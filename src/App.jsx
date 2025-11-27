@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Menu, X, ChevronLeft, ChevronRight, Leaf, Heart, Globe, ArrowRight, Instagram, Facebook, Twitter, Linkedin, Users, MapPin, XCircle, ShoppingBag, Package } from 'lucide-react';
+import Cart from './Cart';
 
 // --- Color Palette Constants ---
 const COLORS = {
@@ -252,8 +253,9 @@ const SectionHeading = ({ children, align = "center" }) => (
 );
 
 // --- Product Detail Modal Component ---
-const ProductDetailModal = ({ product, isOpen, onClose }) => {
+const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart }) => {
   const [selectedVariant, setSelectedVariant] = useState(null);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   useEffect(() => {
     if (product && product.variants && product.variants.length > 0) {
@@ -421,13 +423,27 @@ const ProductDetailModal = ({ product, isOpen, onClose }) => {
             {/* Action Buttons */}
             <div className="space-y-4">
               {product.inStock && selectedVariant && selectedVariant.inStock ? (
-                <button
-                  className="w-full py-4 rounded-xl font-bold text-lg tracking-wide transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2"
-                  style={{ backgroundColor: COLORS.darkGreen, color: COLORS.white }}
-                >
-                  <ShoppingBag size={24} />
-                  <span>Add to Cart</span>
-                </button>
+                <>
+                  <button
+                    onClick={() => {
+                      if (onAddToCart && selectedVariant) {
+                        onAddToCart(product, selectedVariant);
+                        setShowSuccess(true);
+                        setTimeout(() => setShowSuccess(false), 3000);
+                      }
+                    }}
+                    className="w-full py-4 rounded-xl font-bold text-lg tracking-wide transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2"
+                    style={{ backgroundColor: COLORS.darkGreen, color: COLORS.white }}
+                  >
+                    <ShoppingBag size={24} />
+                    <span>Add to Cart</span>
+                  </button>
+                  {showSuccess && (
+                    <div className="p-3 rounded-lg bg-green-50 border-2 border-green-200 text-center">
+                      <span className="text-sm font-bold text-green-700">✓ Added to cart!</span>
+                    </div>
+                  )}
+                </>
               ) : null}
               <button
                 onClick={onClose}
@@ -725,6 +741,88 @@ export default function App() {
   const [scrolled, setScrolled] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState('home'); // 'home' or 'cart'
+  const [cart, setCart] = useState(() => {
+    // Load cart from localStorage on mount
+    const savedCart = localStorage.getItem('gharelu_cart');
+    return savedCart ? JSON.parse(savedCart) : { items: [], total: 0 };
+  });
+
+  // Save cart to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('gharelu_cart', JSON.stringify(cart));
+  }, [cart]);
+
+  // Calculate cart total
+  const getCartTotal = (items) => {
+    return items.reduce((total, item) => total + (item.variant.price * item.quantity), 0);
+  };
+
+  // Add item to cart
+  const addToCart = (product, variant) => {
+    setCart(prevCart => {
+      const existingItemIndex = prevCart.items.findIndex(
+        item => item.productId === product.id && item.variant.size === variant.size
+      );
+
+      let updatedItems;
+      if (existingItemIndex >= 0) {
+        // Update quantity if item already exists
+        updatedItems = [...prevCart.items];
+        updatedItems[existingItemIndex].quantity += 1;
+      } else {
+        // Add new item
+        const newItem = {
+          productId: product.id,
+          productName: product.name,
+          productImage: product.image,
+          productDesc: product.desc,
+          productCategory: product.category,
+          teaGarden: product.teaGarden,
+          variant: variant,
+          quantity: 1
+        };
+        updatedItems = [...prevCart.items, newItem];
+      }
+      return { items: updatedItems, total: getCartTotal(updatedItems) };
+    });
+  };
+
+  // Remove item from cart
+  const removeFromCart = (productId, variantSize) => {
+    setCart(prevCart => {
+      const updatedItems = prevCart.items.filter(
+        item => !(item.productId === productId && item.variant.size === variantSize)
+      );
+      return { items: updatedItems, total: getCartTotal(updatedItems) };
+    });
+  };
+
+  // Update item quantity
+  const updateQuantity = (productId, variantSize, newQuantity) => {
+    if (newQuantity <= 0) {
+      removeFromCart(productId, variantSize);
+      return;
+    }
+    setCart(prevCart => {
+      const updatedItems = prevCart.items.map(item =>
+        item.productId === productId && item.variant.size === variantSize
+          ? { ...item, quantity: newQuantity }
+          : item
+      );
+      return { items: updatedItems, total: getCartTotal(updatedItems) };
+    });
+  };
+
+  // Clear cart
+  const clearCart = () => {
+    setCart({ items: [], total: 0 });
+  };
+
+  // Get cart item count
+  const getCartItemCount = () => {
+    return cart.items.reduce((count, item) => count + item.quantity, 0);
+  };
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -748,6 +846,45 @@ export default function App() {
     setTimeout(() => setSelectedProduct(null), 300);
   };
 
+  // Render Cart page if currentPage is 'cart'
+  if (currentPage === 'cart') {
+    return (
+      <>
+        {/* Navigation for Cart Page */}
+        <nav 
+          className={`fixed w-full z-50 transition-all duration-300 py-4 shadow-md`}
+          style={{ backgroundColor: COLORS.cream }}
+        >
+          <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
+            <div onClick={() => { setCurrentPage('home'); window.scrollTo(0, 0); }} className="cursor-pointer">
+              <Logo />
+            </div>
+            <button
+              onClick={() => setCurrentPage('home')}
+              className="relative hover:opacity-70 transition-opacity"
+              aria-label="Shopping Cart"
+            >
+              <ShoppingBag size={24} />
+              {getCartItemCount() > 0 && (
+                <span className="absolute -top-2 -right-2 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold text-white"
+                      style={{ backgroundColor: COLORS.goldenYellow }}>
+                  {getCartItemCount()}
+                </span>
+              )}
+            </button>
+          </div>
+        </nav>
+        <Cart
+          cart={cart}
+          removeFromCart={removeFromCart}
+          updateQuantity={updateQuantity}
+          clearCart={clearCart}
+          onBackToHome={() => setCurrentPage('home')}
+        />
+      </>
+    );
+  }
+
   return (
     <div className="min-h-screen font-sans" style={{ backgroundColor: COLORS.cream, color: COLORS.darkGreen }}>
       
@@ -762,23 +899,55 @@ export default function App() {
           </div>
 
           {/* Desktop Menu */}
-          <div className="hidden md:flex space-x-12 font-medium tracking-wide">
+          <div className="hidden md:flex items-center space-x-12 font-medium tracking-wide">
             {['Collection', 'Our Tea Gardens', 'Our Story', 'Impact'].map((item) => (
               <button 
                 key={item} 
-                onClick={() => scrollToSection(item.toLowerCase().replace(/\s+/g, '-'))}
+                onClick={() => {
+                  setCurrentPage('home');
+                  scrollToSection(item.toLowerCase().replace(/\s+/g, '-'));
+                }}
                 className="hover:opacity-70 transition-opacity relative group"
               >
                 {item}
                 <span className="absolute -bottom-2 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full" style={{ backgroundColor: COLORS.goldenYellow }}></span>
               </button>
             ))}
+            {/* Cart Icon */}
+            <button
+              onClick={() => setCurrentPage('cart')}
+              className="relative hover:opacity-70 transition-opacity"
+              aria-label="Shopping Cart"
+            >
+              <ShoppingBag size={24} />
+              {getCartItemCount() > 0 && (
+                <span className="absolute -top-2 -right-2 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold text-white"
+                      style={{ backgroundColor: COLORS.goldenYellow }}>
+                  {getCartItemCount()}
+                </span>
+              )}
+            </button>
           </div>
 
-          {/* Mobile Menu Toggle */}
-          <button className="md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-            {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
-          </button>
+          {/* Mobile Menu Toggle and Cart */}
+          <div className="md:hidden flex items-center space-x-4">
+            <button
+              onClick={() => setCurrentPage('cart')}
+              className="relative"
+              aria-label="Shopping Cart"
+            >
+              <ShoppingBag size={24} />
+              {getCartItemCount() > 0 && (
+                <span className="absolute -top-2 -right-2 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold text-white"
+                      style={{ backgroundColor: COLORS.goldenYellow }}>
+                  {getCartItemCount()}
+                </span>
+              )}
+            </button>
+            <button onClick={() => setIsMenuOpen(!isMenuOpen)}>
+              {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
+            </button>
+          </div>
         </div>
 
         {/* Mobile Menu Dropdown */}
@@ -787,7 +956,11 @@ export default function App() {
             {['Collection', 'Our Tea Gardens', 'Our Story', 'Impact'].map((item) => (
               <button 
                 key={item}
-                onClick={() => scrollToSection(item.toLowerCase().replace(/\s+/g, '-'))}
+                onClick={() => {
+                  setCurrentPage('home');
+                  setIsMenuOpen(false);
+                  scrollToSection(item.toLowerCase().replace(/\s+/g, '-'));
+                }}
                 className="text-xl font-serif text-left"
               >
                 {item}
@@ -848,7 +1021,8 @@ export default function App() {
       <ProductDetailModal 
         product={selectedProduct} 
         isOpen={isModalOpen} 
-        onClose={handleCloseModal} 
+        onClose={handleCloseModal}
+        onAddToCart={addToCart}
       />
 
       {/* --- Our Tea Gardens Section --- */}

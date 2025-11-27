@@ -1,0 +1,14 @@
+node_modules
+
+# Local Netlify folder
+.netlify
+
+# Build output
+dist/
+
+# Documentation files
+*.md
+
+# Test files
+test-email.html
+test-serverless-function.js
