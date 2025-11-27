@@ -334,12 +334,6 @@ const Cart = ({ cart, removeFromCart, updateQuantity, clearCart, onBackToHome })
         reply_to: formData.email,
       };
 
-      console.log('Sending email with EmailJS...');
-      console.log('Service ID: service_bbnpyrh');
-      console.log('Template ID: template_t6gf4mj');
-      console.log('Public Key: Y84evwBNKpU6z9dWf');
-      console.log('Template params:', { ...templateParams, message_html: '[HTML content - ' + emailHTML.length + ' chars]' });
-
       // EmailJS v4: publicKey is passed as 4th parameter
       const result = await emailjs.send(
         'service_bbnpyrh',
