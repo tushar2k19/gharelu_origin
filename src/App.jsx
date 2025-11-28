@@ -1,5 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Menu, X, ChevronLeft, ChevronRight, Leaf, Heart, Globe, ArrowRight, Instagram, Facebook, Twitter, Linkedin, Users, MapPin, XCircle, ShoppingBag, Package } from 'lucide-react';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination, Autoplay } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
 import Cart from './Cart';
 
 // --- Color Palette Constants ---
@@ -411,7 +416,7 @@ const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart }) => {
                           </p>
                         </div>
                         <div className="w-16 h-16 rounded-full flex items-center justify-center shadow-lg" style={{ backgroundColor: COLORS.goldenYellow }}>
-                          <Leaf size={32} style={{ color: COLORS.darkGreen }} />
+                          <Leaf size={52} style={{ color: COLORS.darkGreen }} />
                         </div>
                       </div>
                     </div>
@@ -461,275 +466,231 @@ const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart }) => {
 };
 
 const ProductCarousel = ({ onProductClick }) => {
-  const [isPaused, setIsPaused] = useState(false);
-  const [cardWidth, setCardWidth] = useState(450);
-  const scrollContainerRef = useRef(null);
-  const animationRef = useRef(null);
-  const scrollPositionRef = useRef(0);
-
-  // Duplicate products for seamless infinite scroll (3 sets for smooth looping)
-  const duplicatedProducts = [...PRODUCTS, ...PRODUCTS, ...PRODUCTS];
-
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 1024) {
-        setCardWidth(450); // Show ~2.75-3 cards at once on desktop
-      } else if (window.innerWidth >= 640) {
-        setCardWidth(380); // Show ~2 cards on tablet
-      } else {
-        setCardWidth(340); // Show ~1 card on mobile
-      }
-    };
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  useEffect(() => {
-    const container = scrollContainerRef.current;
-    if (!container) return;
-
-    const scrollSpeed = 0.7; // pixels per frame (increased for faster auto-scroll)
-    
-    const animate = () => {
-      if (!isPaused && container) {
-        scrollPositionRef.current += scrollSpeed;
-        
-        // Reset position when we've scrolled one full set of products
-        const singleSetWidth = container.scrollWidth / 3;
-        if (scrollPositionRef.current >= singleSetWidth) {
-          scrollPositionRef.current = 0;
-        }
-        
-        container.style.transform = `translateX(-${scrollPositionRef.current}px)`;
-      }
-      animationRef.current = requestAnimationFrame(animate);
-    };
-
-    animationRef.current = requestAnimationFrame(animate);
-    
-    return () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
-    };
-  }, [isPaused]);
-
-  // Smooth scroll animation function
-  const smoothScrollTo = (targetPosition, duration = 500) => {
-    setIsPaused(true);
-    const container = scrollContainerRef.current;
-    if (!container) return;
-
-    const startPosition = scrollPositionRef.current;
-    const distance = targetPosition - startPosition;
-    const startTime = performance.now();
-    let animationFrameId;
-
-    const animate = (currentTime) => {
-      const elapsed = currentTime - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      
-      // Easing function (ease-in-out)
-      const ease = progress < 0.5
-        ? 2 * progress * progress
-        : 1 - Math.pow(-2 * progress + 2, 2) / 2;
-      
-      scrollPositionRef.current = startPosition + distance * ease;
-      container.style.transform = `translateX(-${scrollPositionRef.current}px)`;
-      
-      if (progress < 1) {
-        animationFrameId = requestAnimationFrame(animate);
-      } else {
-        // Resume auto-scroll after smooth scroll completes + 2 seconds
-        setTimeout(() => setIsPaused(false), 2000);
-      }
-    };
-
-    animationFrameId = requestAnimationFrame(animate);
-    
-    return () => {
-      if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId);
-      }
-    };
-  };
-
-  // Manual scroll functions with smooth animation
-  const scrollLeft = () => {
-    const container = scrollContainerRef.current;
-    if (!container) return;
-    
-    const scrollAmount = cardWidth + 40; // card width + padding
-    const targetPosition = Math.max(0, scrollPositionRef.current - scrollAmount);
-    smoothScrollTo(targetPosition);
-  };
-
-  const scrollRight = () => {
-    const container = scrollContainerRef.current;
-    if (!container) return;
-    
-    const scrollAmount = cardWidth + 40; // card width + padding
-    const singleSetWidth = container.scrollWidth / 3;
-    const targetPosition = Math.min(singleSetWidth - 1, scrollPositionRef.current + scrollAmount);
-    smoothScrollTo(targetPosition);
-  };
+  const navigationPrevRef = useRef(null);
+  const navigationNextRef = useRef(null);
+  const paginationRef = useRef(null);
 
   return (
-    <div className="relative w-full max-w-7xl mx-auto"
-         onMouseEnter={() => setIsPaused(true)}
-         onMouseLeave={() => setIsPaused(false)}>
-      {/* Gradient Fade Overlays */}
-      <div className="absolute left-0 top-0 bottom-0 w-32 z-10 pointer-events-none"
-           style={{ background: `linear-gradient(to right, ${COLORS.cream}, transparent)` }}></div>
-      <div className="absolute right-0 top-0 bottom-0 w-32 z-10 pointer-events-none"
-           style={{ background: `linear-gradient(to left, ${COLORS.cream}, transparent)` }}></div>
+    <div className="relative w-full max-w-7xl mx-auto py-2">
+      {/* Mobile hint text */}
+      <p className="md:hidden text-center text-sm text-gray-600 mb-4">
+        Swipe to explore
+      </p>
 
-      <div className="overflow-hidden py-8">
-        <div 
-          ref={scrollContainerRef}
-          className="flex"
-          style={{ willChange: 'transform' }}
-        >
-          {duplicatedProducts.map((product, idx) => (
-            <div 
-              key={`${product.id}-${idx}`} 
-              className="flex-shrink-0 px-5"
-              style={{ width: `${cardWidth}px`, minWidth: `${cardWidth}px` }}
-            >
-              <div className="group relative bg-white rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 h-full border border-gray-200 hover:border-opacity-50" 
-                   style={{ borderColor: COLORS.darkGreen }}>
-                {/* 3D Card Effect with Enhanced Design */}
-                <div className="relative [perspective:1000px] h-full">
-                  <div className="relative transform transition-all duration-500 group-hover:[transform:rotateY(3deg)_rotateX(-2deg)_translateY(-8px)] [transform-style:preserve-3d]">
-                    {/* Image Container with Modern Gradient */}
-                    <div className="relative h-56 overflow-hidden bg-gradient-to-br from-gray-50 via-white to-gray-50">
-                      <div className="absolute inset-0 bg-gradient-to-t from-white/80 via-transparent to-transparent z-10"></div>
-                      <img 
-                        src={product.image} 
-                        alt={product.name} 
-                        className="w-full h-full object-contain p-5 transform group-hover:scale-110 transition-transform duration-700 relative z-0"
-                      />
-                      
-                      {/* Modern Category Badge */}
-                      <div className="absolute top-3 left-3 z-20">
-                        <div className="px-3 py-1.5 rounded-full backdrop-blur-lg bg-white/95 shadow-xl border border-white/50">
-                          <span className="text-xs font-bold tracking-wider uppercase" style={{ color: COLORS.darkGreen }}>
-                            {product.category}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Stock Badge with Modern Design */}
-                      {!product.inStock && (
-                        <div className="absolute top-3 right-3 z-20">
-                          <div className="px-3 py-1.5 rounded-full bg-gradient-to-r from-red-500 to-red-600 backdrop-blur-lg shadow-xl border border-red-400/50">
-                            <span className="text-xs font-bold text-white">Out of Stock</span>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Decorative Corner Element */}
-                      <div className="absolute top-0 right-0 w-16 h-16 opacity-10 group-hover:opacity-20 transition-opacity">
-                        <div className="absolute top-0 right-0 w-full h-full" 
-                             style={{ 
-                               background: `radial-gradient(circle at top right, ${COLORS.goldenYellow}, transparent)`,
-                               transform: 'rotate(45deg)'
-                             }}></div>
-                      </div>
-                    </div>
-                    
-                    {/* Content Section with Enhanced Design */}
-                    <div className="p-5 flex flex-col bg-white relative">
-                      {/* Subtle Background Pattern */}
-                      <div className="absolute inset-0 opacity-[0.02]"
-                           style={{ 
-                             backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
-                           }}></div>
-                      
-                      <h3 className="text-lg font-serif font-bold mb-2 relative z-10" style={{ color: COLORS.darkGreen }}>
-                        {product.name}
-                      </h3>
-                      <p className="text-gray-600 mb-3 text-sm line-clamp-2 flex-grow relative z-10 leading-relaxed">
-                        {product.desc}
-                      </p>
-                      
-                      {/* Enhanced Price Display */}
-                      {product.inStock && product.variants && product.variants.length > 0 && (
-                        <div className="mb-3 relative z-10">
-                          <div className="flex items-baseline space-x-2">
-                            <p className="text-2xl font-serif font-bold" style={{ color: COLORS.goldenYellow }}>
-                              ₹{product.variants[0].price}
-                            </p>
-                          </div>
-                          <p className="text-xs text-gray-500 mt-0.5 font-medium">{product.variants[0].size}</p>
-                        </div>
-                      )}
-
-                      {/* Modern Button Design */}
-                      <button 
-                        onClick={() => onProductClick(product)}
-                        className="mt-auto w-full py-2.5 rounded-xl font-bold text-sm tracking-wide transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center space-x-2 group/btn relative z-10 shadow-lg hover:shadow-xl"
-                        style={{ 
-                          background: `linear-gradient(135deg, ${COLORS.darkGreen} 0%, #025a2f 100%)`,
-                          color: COLORS.white 
-                        }}
-                      >
-                        <span>View Details</span>
-                        <ArrowRight size={16} className="transform group-hover/btn:translate-x-1 transition-transform" />
-                        {/* Button Shine Effect */}
-                        <div className="absolute inset-0 rounded-xl opacity-0 group-hover/btn:opacity-100 transition-opacity bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12" 
-                             style={{ animation: 'shimmer 2s infinite' }}></div>
-                      </button>
+      <Swiper
+        modules={[Navigation, Pagination, Autoplay]}
+        spaceBetween={0}
+        slidesPerView={1}
+        centeredSlides={true}
+        loop={true}
+        autoplay={{
+          delay: 2500,
+          disableOnInteraction: false,
+        }}
+        navigation={{
+          prevEl: navigationPrevRef.current,
+          nextEl: navigationNextRef.current,
+        }}
+        pagination={{
+          clickable: true,
+          el: paginationRef.current,
+        }}
+        onBeforeInit={(swiper) => {
+          swiper.params.navigation.prevEl = navigationPrevRef.current;
+          swiper.params.navigation.nextEl = navigationNextRef.current;
+          swiper.params.pagination.el = paginationRef.current;
+        }}
+        breakpoints={{
+          640: {
+            slidesPerView: 3,
+            spaceBetween: 24,
+          },
+          1024: {
+            slidesPerView: 5,
+            spaceBetween: 24,
+          },
+        }}
+        className="product-swiper"
+      >
+        {PRODUCTS.map((product) => (
+          <SwiperSlide key={product.id}>
+            <div className="product-card-wrapper">
+              <div 
+                onClick={() => onProductClick(product)}
+                className="relative bg-white rounded-3xl overflow-hidden shadow-xl h-full border transition-all duration-500 cursor-pointer"
+                style={{ borderColor: COLORS.darkGreen }}
+              >
+                {/* Image Container */}
+                <div className="relative h-36 md:h-40 overflow-hidden bg-gradient-to-br from-gray-50 via-white to-gray-50">
+                  <div className="absolute inset-0 bg-gradient-to-t from-white/80 via-transparent to-transparent z-10"></div>
+                  <img 
+                    src={product.image} 
+                    alt={product.name} 
+                    className="w-full h-full object-contain p-5 relative z-0"
+                  />
+                  
+                  {/* Category Badge */}
+                  <div className="absolute top-3 left-3 z-20">
+                    <div className="px-3 py-1.5 rounded-full backdrop-blur-lg bg-white/95 shadow-xl border border-white/50">
+                      <span className="text-xs font-bold tracking-wider uppercase" style={{ color: COLORS.darkGreen }}>
+                        {product.category}
+                      </span>
                     </div>
                   </div>
+
+                  {/* Stock Badge */}
+                  {!product.inStock && (
+                    <div className="absolute top-3 right-3 z-20">
+                      <div className="px-3 py-1.5 rounded-full bg-gradient-to-r from-red-500 to-red-600 backdrop-blur-lg shadow-xl border border-red-400/50">
+                        <span className="text-xs font-bold text-white">Out of Stock</span>
+                      </div>
+                    </div>
+                  )}
                 </div>
-
-                {/* Enhanced Hover Glow Effect */}
-                <div className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-30 transition-opacity duration-500 -z-10 blur-3xl"
-                     style={{ 
-                       background: `radial-gradient(circle at center, ${COLORS.goldenYellow}, ${COLORS.darkGreen})`,
-                       transform: 'scale(1.1)'
-                     }}></div>
-
-                {/* Subtle Border Glow on Hover */}
-                <div className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                     style={{ 
-                       boxShadow: `0 0 0 2px ${COLORS.goldenYellow}40, 0 0 20px ${COLORS.goldenYellow}20`
-                     }}></div>
+                
+                {/* Content Section */}
+                <div className="p-4 flex flex-col bg-white relative">
+                  {/* Subtle Background Pattern */}
+                  <div className="absolute inset-0 opacity-[0.02]"
+                       style={{ 
+                         backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+                       }}></div>
+                  
+                  <h3 className="text-lg font-serif font-bold mb-2 relative z-10" style={{ color: COLORS.darkGreen }}>
+                    {product.name}
+                  </h3>
+                  <p className="text-gray-600 mb-3 text-sm line-clamp-2 flex-grow relative z-10 leading-relaxed">
+                    {product.desc}
+                  </p>
+                  
+                  {/* Price Display */}
+                  {product.inStock && product.variants && product.variants.length > 0 && (
+                    <div className="mb-3 relative z-10">
+                      <div className="flex items-baseline space-x-2">
+                        <p className="text-2xl font-serif font-bold" style={{ color: COLORS.goldenYellow }}>
+                          ₹{product.variants[0].price}
+                        </p>
+                      </div>
+                      <p className="text-xs text-gray-500 mt-0.5 font-medium">{product.variants[0].size}</p>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
-          ))}
-        </div>
-      </div>
+          </SwiperSlide>
+        ))}
+      </Swiper>
 
-      {/* Navigation Arrows */}
+      {/* Custom Navigation Buttons */}
       <button 
-        onClick={scrollLeft}
-        className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/95 backdrop-blur-md p-3 rounded-full shadow-xl hover:bg-white transition-all transform hover:scale-110 z-30 border border-gray-200"
+        ref={navigationPrevRef}
+        className="swiper-button-prev-custom absolute left-2 md:left-4 top-1/2 -translate-y-1/2 bg-white/95 backdrop-blur-md p-2 md:p-3 rounded-full shadow-xl hover:bg-white transition-all transform hover:scale-110 z-30 border border-gray-200"
         style={{ color: COLORS.darkGreen }}
-        aria-label="Scroll left"
+        aria-label="Previous slide"
       >
-        <ChevronLeft size={24} />
+        <ChevronLeft size={20} className="md:w-6 md:h-6" />
       </button>
       <button 
-        onClick={scrollRight}
-        className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/95 backdrop-blur-md p-3 rounded-full shadow-xl hover:bg-white transition-all transform hover:scale-110 z-30 border border-gray-200"
+        ref={navigationNextRef}
+        className="swiper-button-next-custom absolute right-2 md:right-4 top-1/2 -translate-y-1/2 bg-white/95 backdrop-blur-md p-2 md:p-3 rounded-full shadow-xl hover:bg-white transition-all transform hover:scale-110 z-30 border border-gray-200"
         style={{ color: COLORS.darkGreen }}
-        aria-label="Scroll right"
+        aria-label="Next slide"
       >
-        <ChevronRight size={24} />
+        <ChevronRight size={20} className="md:w-6 md:h-6" />
       </button>
 
-      {/* Add CSS Animation for shimmer */}
+      {/* Custom Pagination (Mobile only) */}
+      <div ref={paginationRef} className="swiper-pagination-custom flex justify-center gap-2 mt-6 md:hidden"></div>
+
+      {/* Custom Styles */}
       <style>{`
-        @keyframes shimmer {
-          0% {
-            transform: translateX(-100%) skewX(-12deg);
+        .product-swiper {
+          padding: 0 50px;
+        }
+        
+        @media (max-width: 640px) {
+          .product-swiper {
+            padding: 0 40px;
           }
-          100% {
-            transform: translateX(200%) skewX(-12deg);
-          }
+        }
+
+        /* Hide default Swiper navigation and pagination */
+        .product-swiper .swiper-button-next,
+        .product-swiper .swiper-button-prev {
+          display: none;
+        }
+
+        .product-card-wrapper {
+          transition: transform 0.5s ease, opacity 0.5s ease, filter 0.5s ease;
+          transform: scale(0.85);
+          opacity: 0.4;
+          filter: blur(4px);
+        }
+
+        .swiper-slide-active .product-card-wrapper {
+          transform: scale(1);
+          opacity: 1;
+          filter: blur(0);
+        }
+
+        /* Immediate neighbors (-1 and 1) - less faded */
+        .swiper-slide-prev .product-card-wrapper,
+        .swiper-slide-next .product-card-wrapper {
+          transform: scale(0.9);
+          opacity: 0.6;
+          filter: blur(2px);
+        }
+
+        /* Further away cards (-2 and 2) - more faded */
+        .swiper-slide:not(.swiper-slide-active):not(.swiper-slide-prev):not(.swiper-slide-next) .product-card-wrapper {
+          transform: scale(0.85);
+          opacity: 0.4;
+          filter: blur(4px);
+        }
+
+        /* Navigation button styles */
+        .swiper-button-prev-custom,
+        .swiper-button-next-custom {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          cursor: pointer;
+          z-index: 30;
+        }
+
+        .swiper-button-prev-custom.swiper-button-disabled,
+        .swiper-button-next-custom.swiper-button-disabled {
+          opacity: 0.35;
+          cursor: auto;
+          pointer-events: none;
+        }
+
+        /* Pagination styles */
+        .swiper-pagination-custom {
+          position: relative !important;
+          text-align: center;
+          margin-top: 1.5rem;
+          display: flex;
+          justify-content: center;
+          gap: 8px;
+        }
+
+        .swiper-pagination-custom .swiper-pagination-bullet {
+          width: 8px;
+          height: 8px;
+          background: ${COLORS.darkGreen};
+          opacity: 0.3;
+          margin: 0 !important;
+          transition: all 0.3s ease;
+          border-radius: 50%;
+          cursor: pointer;
+        }
+
+        .swiper-pagination-custom .swiper-pagination-bullet-active {
+          opacity: 1;
+          background: ${COLORS.goldenYellow};
+          width: 24px;
+          border-radius: 4px;
         }
       `}</style>
     </div>
@@ -833,7 +794,15 @@ export default function App() {
   const scrollToSection = (id) => {
     setIsMenuOpen(false);
     const element = document.getElementById(id);
-    if (element) element.scrollIntoView({ behavior: 'smooth' });
+    if (element) {
+      const navHeight = 80; // Approximate nav height
+      const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+      const offsetPosition = elementPosition - navHeight;
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
+    }
   };
 
   const handleProductClick = (product) => {
@@ -900,7 +869,7 @@ export default function App() {
           }}
         >
           <Leaf 
-            size={120} 
+            size={50} 
             color={COLORS.darkGreen}
             strokeWidth={1}
           />
@@ -915,7 +884,7 @@ export default function App() {
           }}
         >
           <Leaf 
-            size={100} 
+            size={60} 
             color={COLORS.darkGreen}
             strokeWidth={1}
           />
@@ -931,7 +900,91 @@ export default function App() {
           }}
         >
           <Leaf 
-            size={140} 
+            size={40} 
+            color={COLORS.darkGreen}
+            strokeWidth={1}
+          />
+        </div>
+        {/* Center leaf */}
+        <div 
+          className="hidden md:block"
+          style={{ 
+            position: 'absolute',
+            top: '50%', 
+            left: '50%', 
+            transform: 'translate(-50%, -50%) rotate(30deg)',
+            opacity: 0.12
+          }}
+        >
+          <Leaf 
+            size={45} 
+            color={COLORS.darkGreen}
+            strokeWidth={1}
+          />
+        </div>
+        {/* Top center leaf */}
+        <div 
+          style={{ 
+            position: 'absolute',
+            top: '8%', 
+            left: '50%', 
+            transform: 'translateX(-50%) rotate(-10deg)',
+            opacity: 0.15
+          }}
+        >
+          <Leaf 
+            size={35} 
+            color={COLORS.darkGreen}
+            strokeWidth={1}
+          />
+        </div>
+        {/* Bottom right leaf */}
+        <div 
+          className="hidden md:block"
+          style={{ 
+            position: 'absolute',
+            bottom: '15%', 
+            right: '12%', 
+            transform: 'rotate(-35deg)',
+            opacity: 0.15
+          }}
+        >
+          <Leaf 
+            size={50} 
+            color={COLORS.darkGreen}
+            strokeWidth={1}
+          />
+        </div>
+        {/* Middle left leaf */}
+        <div 
+          className="hidden md:block"
+          style={{ 
+            position: 'absolute',
+            top: '40%', 
+            left: '3%', 
+            transform: 'rotate(20deg)',
+            opacity: 0.13
+          }}
+        >
+          <Leaf 
+            size={40} 
+            color={COLORS.darkGreen}
+            strokeWidth={1}
+          />
+        </div>
+        {/* Middle right leaf */}
+        <div 
+          className="hidden md:block"
+          style={{ 
+            position: 'absolute',
+            top: '35%', 
+            right: '5%', 
+            transform: 'rotate(-20deg)',
+            opacity: 0.14
+          }}
+        >
+          <Leaf 
+            size={50} 
             color={COLORS.darkGreen}
             strokeWidth={1}
           />
@@ -1062,8 +1115,13 @@ export default function App() {
       </header>
 
       {/* --- Products Section --- */}
-      <section id="collection" className="py-20 md:py-32 relative z-10">
-        <SectionHeading>Collection</SectionHeading>
+      <section id="collection" className="pt-4 md:pt-8 pb-20 md:pb-32 relative z-10">
+        <h2 
+          className="text-3xl md:text-5xl font-serif font-bold mb-4 md:mb-6 text-center"
+          style={{ color: COLORS.darkGreen }}
+        >
+          Collection
+        </h2>
         <ProductCarousel onProductClick={handleProductClick} />
       </section>
 
@@ -1228,7 +1286,7 @@ export default function App() {
           {/* Column 1: Info & Social */}
           <div className="md:col-span-1">
              <div className="flex items-center space-x-2 mb-3">
-                <Leaf className="text-white" size={18} />
+                <Leaf className="text-white" size={58} />
                 <span className="font-serif font-bold text-base tracking-wider">GHARELU ORIGINS</span>
              </div>
              <p className="text-green-200 text-xs leading-relaxed mb-4">
