@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Menu, X, ChevronLeft, ChevronRight, Leaf, Heart, Globe, ArrowRight, Instagram, Facebook, Twitter, Linkedin, Users, MapPin, XCircle, ShoppingBag, Package } from 'lucide-react';
+import { Menu, X, ChevronLeft, ChevronRight, Leaf, Heart, Globe, ArrowRight, Instagram, Facebook, Twitter, Linkedin, Users, MapPin, XCircle, ShoppingBag, Package, Coffee, Flame, Lightbulb, Apple, Recycle, Droplet, Sparkles, Mountain, Waves } from 'lucide-react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 import 'swiper/css';
@@ -226,6 +226,49 @@ const TEA_GARDENS = [
     image: "https://images.unsplash.com/photo-1600093463592-8e36ae95ef56?q=80&w=800&auto=format&fit=crop"
   }
 ];
+
+// Icon mapping for each tea garden
+const TEA_GARDEN_ICONS = {
+  "Samrikpani Tea Estate": Package,
+  "Peshok Tea Estate": Flame,
+  "Moondakotee Tea Estate": Lightbulb,
+  "Mangarjung Tea Estate": Apple,
+  "Panighata Tea Estate": Recycle,
+  "Makaibari Tea Estate": Droplet,
+  "Ambootia Tea Estate": Sparkles
+};
+
+// Gradient colors for each tea garden - darker, more saturated for better contrast
+const TEA_GARDEN_GRADIENTS = {
+  "Samrikpani Tea Estate": { 
+    front: "from-amber-200 via-orange-100 to-yellow-100",
+    back: "from-amber-700 via-orange-600 to-yellow-600"
+  },
+  "Peshok Tea Estate": { 
+    front: "from-red-200 via-orange-200 to-amber-200",
+    back: "from-red-700 via-orange-700 to-amber-700"
+  },
+  "Moondakotee Tea Estate": { 
+    front: "from-purple-200 via-indigo-200 to-blue-200",
+    back: "from-purple-700 via-indigo-700 to-blue-700"
+  },
+  "Mangarjung Tea Estate": { 
+    front: "from-pink-200 via-rose-200 to-red-200",
+    back: "from-pink-700 via-rose-700 to-red-700"
+  },
+  "Panighata Tea Estate": { 
+    front: "from-green-200 via-emerald-200 to-teal-200",
+    back: "from-green-700 via-emerald-700 to-teal-700"
+  },
+  "Makaibari Tea Estate": { 
+    front: "from-yellow-200 via-amber-200 to-orange-200",
+    back: "from-yellow-700 via-amber-700 to-orange-700"
+  },
+  "Ambootia Tea Estate": { 
+    front: "from-blue-200 via-cyan-200 to-teal-200",
+    back: "from-blue-700 via-cyan-700 to-teal-700"
+  }
+};
 
 const IMPACT_STATS = [
   { icon: Users, label: "Households Touched", value: "5,000+" },
@@ -1074,7 +1117,7 @@ export default function App() {
       </nav>
 
       {/* --- Hero Section --- */}
-      <header className="relative pt-24 pb-16 md:pt-32 md:pb-24 px-6 overflow-hidden z-10">
+      <header className="relative pt-24 pb-24 md:pt-32 md:pb-40 px-6 overflow-hidden z-10">
         <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
           <div className="z-10 order-2 md:order-1">
             <span className="inline-block px-4 py-2 rounded-full text-sm font-bold tracking-widest uppercase mb-6" style={{ backgroundColor: COLORS.goldenYellow, color: COLORS.darkGreen }}>
@@ -1115,7 +1158,7 @@ export default function App() {
       </header>
 
       {/* --- Products Section --- */}
-      <section id="collection" className="pt-4 md:pt-8 pb-20 md:pb-32 relative z-10">
+      <section id="collection" className="pt-12 md:pt-20 pb-20 md:pb-32 relative z-10">
         <h2 
           className="text-3xl md:text-5xl font-serif font-bold mb-4 md:mb-6 text-center"
           style={{ color: COLORS.darkGreen }}
@@ -1134,55 +1177,124 @@ export default function App() {
       />
 
       {/* --- Our Tea Gardens Section --- */}
-      <section id="our-tea-gardens" className="py-20 md:py-32 bg-white relative z-10">
+      <section id="our-tea-gardens" className="pt-4 md:pt-8 pb-20 md:pb-32 bg-white relative z-10">
         <div className="max-w-7xl mx-auto px-6">
-          <SectionHeading>Our Tea Gardens</SectionHeading>
+          <h2 
+            className="text-3xl md:text-5xl font-serif font-bold mb-4 md:mb-6 text-center"
+            style={{ color: COLORS.darkGreen }}
+          >
+            Our Tea Gardens
+          </h2>
           <p className="text-center max-w-3xl mx-auto mb-16 text-lg text-gray-700">
              Discover the soul of Darjeeling through the unique offerings of seven remarkable tea estates. 
              Each garden tells a story—of tradition, craftsmanship, and the women who bring these creations to life.
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {TEA_GARDENS.map((garden, idx) => (
-              <div key={idx} className="group rounded-xl [perspective:1000px] relative" style={{height: '380px'}}>
-                <div className="relative w-full h-full transition-transform duration-700 [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)]">
+            {TEA_GARDENS.map((garden, idx) => {
+              const IconComponent = TEA_GARDEN_ICONS[garden.name];
+              const gradientClass = TEA_GARDEN_GRADIENTS[garden.name];
+              
+              return (
+              <div 
+                key={idx} 
+                className="group rounded-xl [perspective:1000px] relative animate-fade-in-up cursor-pointer" 
+                style={{
+                  height: '380px',
+                  animationDelay: `${idx * 100}ms`,
+                  animationFillMode: 'both'
+                }}
+                onClick={(e) => {
+                  // For mobile: toggle flip on click
+                  if (window.innerWidth < 768) {
+                    e.currentTarget.classList.toggle('flipped');
+                  }
+                }}
+              >
+                <div className="relative w-full h-full transition-all duration-700 [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)] group-hover:scale-[1.02]">
                   {/* Front Face */}
-                  <div className="absolute w-full h-full [backface-visibility:hidden] rounded-xl overflow-hidden shadow-lg bg-gray-50 flex flex-col">
-                    <div className="h-48 overflow-hidden">
-                      <img 
-                        src={garden.image} 
-                        alt={garden.name} 
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
-                      />
-                    </div>
-                    <div className="p-6 flex-grow flex flex-col">
-                      <div className="flex items-center mb-3">
-                        <MapPin className="mr-2 flex-shrink-0" size={18} style={{ color: COLORS.goldenYellow }} />
-                        <h3 className="text-xl font-serif font-bold" style={{ color: COLORS.darkGreen }}>{garden.name}</h3>
+                  <div className="absolute w-full h-full [backface-visibility:hidden] rounded-xl overflow-hidden shadow-2xl bg-white flex flex-col border-2 transition-all duration-500"
+                       style={{ borderColor: COLORS.darkGreen + '20' }}>
+                    {/* Icon Section with Gradient */}
+                    <div className={`relative h-40 bg-gradient-to-br ${gradientClass.front} overflow-hidden flex items-center justify-center`}>
+                      {/* Decorative Tea Leaf Pattern - Very Subtle */}
+                      <div className="absolute inset-0 opacity-[0.03]"
+                           style={{ 
+                             backgroundImage: `url("data:image/svg+xml,%3Csvg width='300' height='300' viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cg%3E%3Cpath d='M150,100 Q155,85 160,100 Q165,115 160,130 Q155,145 150,130 Q145,115 150,100 Z' fill='%23034225' opacity='0.15'/%3E%3Cpath d='M150,100 L160,130' stroke='%23034225' stroke-width='1' opacity='0.2'/%3E%3Cpath d='M150,110 Q152,110 154,112' stroke='%23034225' stroke-width='0.5' fill='none' opacity='0.15'/%3E%3Cpath d='M150,120 Q152,120 154,122' stroke='%23034225' stroke-width='0.5' fill='none' opacity='0.15'/%3E%3C/g%3E%3C/svg%3E")`
+                           }}
+                      ></div>
+                      {/* Large Icon with glow effect */}
+                      <div className="relative z-10 transform transition-all duration-500 group-hover:scale-110 group-hover:rotate-6">
+                        <div className="absolute inset-0 blur-2xl opacity-30" style={{ backgroundColor: COLORS.goldenYellow }}></div>
+                        <IconComponent 
+                          size={70} 
+                          style={{ color: COLORS.darkGreen }}
+                          className="drop-shadow-2xl relative"
+                          strokeWidth={2.5}
+                        />
                       </div>
-                      <p className="text-gray-600 text-sm leading-relaxed line-clamp-3 flex-grow">{garden.desc}</p>
+                    </div>
+                    {/* Content Section */}
+                    <div className="p-5 flex-grow flex flex-col bg-white relative">
+                      <div className="flex items-center mb-2">
+                        <MapPin className="mr-2 flex-shrink-0" size={16} style={{ color: COLORS.goldenYellow }} />
+                        <h3 className="text-lg font-serif font-bold transition-colors" style={{ color: COLORS.darkGreen }}>{garden.name}</h3>
+                      </div>
+                      <p className="text-gray-600 text-sm leading-relaxed line-clamp-3 flex-grow mb-3">{garden.desc}</p>
+                      {/* Show More Button */}
+                      <div className="flex justify-center mt-auto">
+                        <button className="px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 group-hover:scale-105 flex items-center gap-2"
+                                style={{ 
+                                  backgroundColor: COLORS.darkGreen + '10',
+                                  color: COLORS.darkGreen
+                                }}>
+                          <span>Read Full Story</span>
+                          <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                        </button>
+                      </div>
                     </div>
                   </div>
  
                   {/* Back Face */}
-                  <div className="absolute w-full h-full [backface-visibility:hidden] [transform:rotateY(180deg)] rounded-xl overflow-hidden shadow-lg flex flex-col p-8 relative">
-                    {/* Background Image with Overlay */}
-                    <div className="absolute inset-0 z-0">
-                      <img 
-                        src={garden.image} 
-                        alt={garden.name} 
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute inset-0 bg-white opacity-70"></div>
-                    </div>
+                  <div className={`absolute w-full h-full [backface-visibility:hidden] [transform:rotateY(180deg)] rounded-xl overflow-hidden shadow-2xl flex flex-col p-6 relative bg-gradient-to-br ${gradientClass.back}`}>
+                    {/* Decorative Tea Leaf Pattern Overlay - Very Subtle */}
+                    <div className="absolute inset-0 opacity-[0.06]"
+                         style={{ 
+                           backgroundImage: `url("data:image/svg+xml,%3Csvg width='300' height='300' viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cg%3E%3Cpath d='M150,100 Q155,85 160,100 Q165,115 160,130 Q155,145 150,130 Q145,115 150,100 Z' fill='%23ffffff' opacity='0.25'/%3E%3Cpath d='M150,100 L160,130' stroke='%23ffffff' stroke-width='1.5' opacity='0.3'/%3E%3Cpath d='M150,110 Q152,110 154,112' stroke='%23ffffff' stroke-width='0.8' fill='none' opacity='0.25'/%3E%3Cpath d='M150,120 Q152,120 154,122' stroke='%23ffffff' stroke-width='0.8' fill='none' opacity='0.25'/%3E%3C/g%3E%3C/svg%3E")`
+                         }}
+                    ></div>
+                    {/* Subtle gradient overlay for depth */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
+                    
                     {/* Content */}
                     <div className="relative z-10 flex flex-col h-full">
-                      <div className="flex items-center mb-4">
-                        <MapPin className="mr-2 flex-shrink-0" size={18} style={{ color: COLORS.goldenYellow }} />
-                        <h3 className="text-xl font-serif font-bold" style={{ color: COLORS.darkGreen }}>{garden.name}</h3>
+                      {/* Header with icon and name */}
+                      <div className="flex items-center mb-4 pb-3 border-b-2 border-white/30">
+                        <div className="p-2 rounded-lg bg-white/20 backdrop-blur-sm mr-3 shadow-lg">
+                          <IconComponent size={20} style={{ color: '#fff' }} strokeWidth={2.5} />
+                        </div>
+                        <h3 className="text-lg font-serif font-bold text-white drop-shadow-lg">{garden.name}</h3>
                       </div>
-                      <div className="overflow-y-auto flex-grow">
-                        <p className="text-gray-800 text-sm leading-relaxed font-bold">{garden.desc}</p>
+                      
+                      {/* Description - fixed height, no scrolling */}
+                      <div className="flex-grow flex items-center">
+                        <p className="text-white text-xs leading-relaxed font-medium md:font-bold drop-shadow-md"
+                           style={{ 
+                             textShadow: '0 2px 4px rgba(0,0,0,0.3)'
+                           }}>
+                          {garden.desc}
+                        </p>
+                      </div>
+                      
+                      {/* Location badge at bottom */}
+                      <div className="mt-4 pt-3 border-t-2 border-white/30 flex items-center justify-between">
+                        <div className="flex items-center">
+                          <MapPin size={14} className="mr-2 text-white drop-shadow" />
+                          <span className="text-xs font-bold text-white drop-shadow uppercase tracking-wider">Darjeeling</span>
+                        </div>
+                        <div className="px-3 py-1 rounded-full bg-white/20 backdrop-blur-sm">
+                          <span className="text-xs font-bold text-white drop-shadow">Tea Estate</span>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -1195,7 +1307,8 @@ export default function App() {
                   ></div>
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
@@ -1207,13 +1320,49 @@ export default function App() {
 
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid md:grid-cols-2 gap-16 items-center">
-            <div className="relative">
-              <div className="absolute inset-0 transform translate-x-4 translate-y-4 rounded-2xl" style={{ border: `2px solid ${COLORS.goldenYellow}` }}></div>
-              <img 
-                src="https://images.unsplash.com/photo-1544253303-376046e8c750?q=80&w=1000&auto=format&fit=crop" 
-                alt="Woman harvesting tea" 
-                className="relative rounded-2xl shadow-lg w-full h-[600px] object-cover grayscale hover:grayscale-0 transition-all duration-700"
-              />
+            <div className="relative group">
+              {/* Decorative floating elements */}
+              <div className="absolute -top-6 -left-6 w-24 h-24 rounded-full opacity-20 blur-xl transition-all duration-700 group-hover:opacity-30 group-hover:scale-110" style={{ backgroundColor: COLORS.goldenYellow }}></div>
+              <div className="absolute -bottom-6 -right-6 w-32 h-32 rounded-full opacity-15 blur-2xl transition-all duration-700 group-hover:opacity-25 group-hover:scale-110" style={{ backgroundColor: COLORS.darkGreen }}></div>
+              
+              {/* Modern layered frame effect */}
+              <div className="relative">
+                {/* Outer glow effect */}
+                <div className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-2xl" style={{ backgroundColor: COLORS.goldenYellow, transform: 'scale(1.05)' }}></div>
+                
+                {/* Main image container with modern styling */}
+                <div className="relative rounded-3xl overflow-hidden shadow-2xl bg-gradient-to-br from-white via-gray-50 to-gray-100 p-6 transform transition-all duration-500 group-hover:scale-[1.02]">
+                  {/* Subtle inner border gradient */}
+                  <div className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{ 
+                    background: `linear-gradient(135deg, ${COLORS.goldenYellow}15 0%, transparent 50%, ${COLORS.darkGreen}10 100%)`,
+                    padding: '2px'
+                  }}></div>
+                  
+                  {/* Image with elegant frame */}
+                  <div className="relative rounded-2xl overflow-hidden bg-white shadow-inner">
+                    <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-black/5 pointer-events-none"></div>
+                    <img 
+                      src="/assets/origins_bk.png" 
+                      alt="Woman harvesting tea" 
+                      className="w-full h-[600px] object-contain transition-all duration-700 group-hover:scale-105"
+                    />
+                    
+                    {/* Subtle corner accents */}
+                    <div className="absolute top-4 left-4 w-12 h-12 border-t-2 border-l-2 rounded-tl-lg opacity-30 transition-opacity duration-500 group-hover:opacity-50" style={{ borderColor: COLORS.goldenYellow }}></div>
+                    <div className="absolute top-4 right-4 w-12 h-12 border-t-2 border-r-2 rounded-tr-lg opacity-30 transition-opacity duration-500 group-hover:opacity-50" style={{ borderColor: COLORS.goldenYellow }}></div>
+                    <div className="absolute bottom-4 left-4 w-12 h-12 border-b-2 border-l-2 rounded-bl-lg opacity-30 transition-opacity duration-500 group-hover:opacity-50" style={{ borderColor: COLORS.goldenYellow }}></div>
+                    <div className="absolute bottom-4 right-4 w-12 h-12 border-b-2 border-r-2 rounded-br-lg opacity-30 transition-opacity duration-500 group-hover:opacity-50" style={{ borderColor: COLORS.goldenYellow }}></div>
+                  </div>
+                </div>
+                
+                {/* Floating decorative leaf elements */}
+                <div className="absolute -top-8 -right-8 w-16 h-16 opacity-10 group-hover:opacity-20 transition-all duration-700 group-hover:rotate-12">
+                  <Leaf size={64} style={{ color: COLORS.darkGreen }} />
+                </div>
+                <div className="absolute -bottom-8 -left-8 w-12 h-12 opacity-10 group-hover:opacity-20 transition-all duration-700 group-hover:-rotate-12">
+                  <Leaf size={48} style={{ color: COLORS.goldenYellow }} />
+                </div>
+              </div>
             </div>
             
             <div>
