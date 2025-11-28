@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { X, Plus, Minus, ShoppingBag, ArrowLeft, Mail, Phone, User, MessageSquare, ChevronRight, AlertCircle, CheckCircle, Leaf } from 'lucide-react';
 import emailjs from '@emailjs/browser';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -18,6 +18,11 @@ const EnquiryPage = ({ cart, removeFromCart, updateQuantity, clearCart, onBackTo
   const [showEmptyBagWarning, setShowEmptyBagWarning] = useState(false);
 
   const formRef = useRef(null);
+
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
 
   const getCartTotal = () => {
     return cart.items.reduce((total, item) => total + (item.variant.price * item.quantity), 0);
