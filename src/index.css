@@ -44,3 +44,106 @@
     transform: rotateY(180deg) !important;
   }
 }
+
+/* Floating Tea Leaves Animation */
+@keyframes float-leaf {
+  0%, 100% {
+    transform: translateY(0) translateX(0) rotate(0deg);
+    opacity: 0.6;
+  }
+  25% {
+    transform: translateY(-20px) translateX(10px) rotate(5deg);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateY(-40px) translateX(-5px) rotate(-5deg);
+    opacity: 0.7;
+  }
+  75% {
+    transform: translateY(-20px) translateX(-10px) rotate(3deg);
+    opacity: 0.8;
+  }
+}
+
+@keyframes float-leaf-delayed {
+  0%, 100% {
+    transform: translateY(0) translateX(0) rotate(0deg);
+    opacity: 0.5;
+  }
+  33% {
+    transform: translateY(-30px) translateX(15px) rotate(-8deg);
+    opacity: 0.7;
+  }
+  66% {
+    transform: translateY(-50px) translateX(-10px) rotate(8deg);
+    opacity: 0.6;
+  }
+}
+
+.animate-float-leaf {
+  animation: float-leaf 8s ease-in-out infinite;
+}
+
+.animate-float-leaf-delayed {
+  animation: float-leaf-delayed 10s ease-in-out infinite;
+}
+
+/* Tea Steam/Wisp Animation */
+@keyframes steam-rise {
+  0% {
+    transform: translateY(0) scale(0.8);
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(-100px) scale(1.2);
+    opacity: 0;
+  }
+}
+
+.animate-steam {
+  animation: steam-rise 4s ease-out infinite;
+}
+
+/* Nepali-Tibetan Inspired Textures */
+.nepali-texture {
+  background-image: 
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 2px,
+      rgba(3, 66, 37, 0.03) 2px,
+      rgba(3, 66, 37, 0.03) 4px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 2px,
+      rgba(249, 176, 0, 0.02) 2px,
+      rgba(249, 176, 0, 0.02) 4px
+    );
+}
+
+.weaving-pattern {
+  background-image: 
+    linear-gradient(90deg, transparent 0%, rgba(3, 66, 37, 0.05) 50%, transparent 100%),
+    linear-gradient(0deg, transparent 0%, rgba(249, 176, 0, 0.03) 50%, transparent 100%);
+  background-size: 20px 20px;
+}
+
+.paper-texture {
+  background-image: 
+    radial-gradient(circle at 1px 1px, rgba(3, 66, 37, 0.05) 1px, transparent 0);
+  background-size: 30px 30px;
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .animate-float-leaf,
+  .animate-float-leaf-delayed,
+  .animate-steam {
+    animation: none;
+  }
+}

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Menu, X, ChevronLeft, ChevronRight, Leaf, Heart, Globe, ArrowRight, Instagram, Facebook, Twitter, Linkedin, Users, MapPin, XCircle, ShoppingBag, Package, Coffee, Flame, Lightbulb, Apple, Recycle, Droplet, Sparkles, Mountain, Waves } from 'lucide-react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Autoplay } from 'swiper/modules';
+import { motion, useScroll, useTransform, useInView } from 'framer-motion';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
@@ -238,35 +239,35 @@ const TEA_GARDEN_ICONS = {
   "Ambootia Tea Estate": Sparkles
 };
 
-// Gradient colors for each tea garden - darker, more saturated for better contrast
+// Gradient colors for each tea garden - richer, more saturated for better contrast
 const TEA_GARDEN_GRADIENTS = {
   "Samrikpani Tea Estate": { 
-    front: "from-amber-200 via-orange-100 to-yellow-100",
-    back: "from-amber-700 via-orange-600 to-yellow-600"
+    front: "from-amber-300 via-orange-200 to-yellow-200",
+    back: "from-amber-800 via-orange-700 to-yellow-700"
   },
   "Peshok Tea Estate": { 
-    front: "from-red-200 via-orange-200 to-amber-200",
-    back: "from-red-700 via-orange-700 to-amber-700"
+    front: "from-red-300 via-orange-300 to-amber-300",
+    back: "from-red-800 via-orange-800 to-amber-800"
   },
   "Moondakotee Tea Estate": { 
-    front: "from-purple-200 via-indigo-200 to-blue-200",
-    back: "from-purple-700 via-indigo-700 to-blue-700"
+    front: "from-purple-300 via-indigo-300 to-blue-300",
+    back: "from-purple-800 via-indigo-800 to-blue-800"
   },
   "Mangarjung Tea Estate": { 
-    front: "from-pink-200 via-rose-200 to-red-200",
-    back: "from-pink-700 via-rose-700 to-red-700"
+    front: "from-pink-300 via-rose-300 to-red-300",
+    back: "from-pink-800 via-rose-800 to-red-800"
   },
   "Panighata Tea Estate": { 
-    front: "from-green-200 via-emerald-200 to-teal-200",
-    back: "from-green-700 via-emerald-700 to-teal-700"
+    front: "from-green-300 via-emerald-300 to-teal-300",
+    back: "from-green-800 via-emerald-800 to-teal-800"
   },
   "Makaibari Tea Estate": { 
-    front: "from-yellow-200 via-amber-200 to-orange-200",
-    back: "from-yellow-700 via-amber-700 to-orange-700"
+    front: "from-yellow-300 via-amber-300 to-orange-300",
+    back: "from-yellow-800 via-amber-800 to-orange-800"
   },
   "Ambootia Tea Estate": { 
-    front: "from-blue-200 via-cyan-200 to-teal-200",
-    back: "from-blue-700 via-cyan-700 to-teal-700"
+    front: "from-blue-300 via-cyan-300 to-teal-300",
+    back: "from-blue-800 via-cyan-800 to-teal-800"
   }
 };
 
@@ -286,8 +287,19 @@ const SOCIAL_LINKS = [
 // --- Components ---
 
 const Logo = () => (
-  <div className="flex flex-col items-center justify-center font-serif tracking-widest text-center cursor-pointer select-none">
-    <img src="/assets/Gharelu Origins.svg" alt="Gharelu Origins" className="h-10 md:h-12" />
+  <div className="flex items-center gap-2 md:gap-3 cursor-pointer select-none">
+    <img 
+      src="/assets/Gharelu Origins.svg" 
+      alt="Gharelu Origins" 
+      className="h-11 md:h-14 w-auto object-contain m-0 p-0"
+      style={{ margin: 0, padding: 0, paddingBottom: 0 }}
+    />
+    <img 
+      src="/assets/DWS Logo.svg" 
+      alt="Darjeeling Welfare Society" 
+      className="h-8 md:h-10 w-auto object-contain m-0 p-0"
+      style={{ margin: 0, padding: 0, paddingBottom: 0 }}
+    />
   </div>
 );
 
@@ -299,6 +311,330 @@ const SectionHeading = ({ children, align = "center" }) => (
     {children}
   </h2>
 );
+
+// Floating Tea Leaves Component
+const FloatingTeaLeaves = () => {
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    setPrefersReducedMotion(mediaQuery.matches);
+    
+    const handleChange = (e) => setPrefersReducedMotion(e.matches);
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, []);
+
+  const leaves = Array.from({ length: prefersReducedMotion ? 3 : 6 }, (_, i) => i);
+  const steamWisps = Array.from({ length: prefersReducedMotion ? 2 : 4 }, (_, i) => i);
+  
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden z-10">
+      {/* Floating Tea Leaves */}
+      {leaves.map((leaf, idx) => (
+        <motion.div
+          key={`leaf-${idx}`}
+          className="absolute hidden md:block"
+          initial={{
+            left: `${10 + Math.random() * 80}%`,
+            top: `${60 + Math.random() * 30}%`,
+            opacity: 0.2,
+          }}
+          animate={prefersReducedMotion ? {} : {
+            y: [0, -30, -60, -30, 0],
+            x: [0, Math.random() * 20 - 10, Math.random() * 20 - 10, 0],
+            rotate: [0, Math.random() * 20 - 10, Math.random() * 20 - 10, 0],
+            opacity: [0.2, 0.5, 0.4, 0.5, 0.2],
+          }}
+          transition={prefersReducedMotion ? {} : {
+            duration: 8 + Math.random() * 4,
+            repeat: Infinity,
+            delay: Math.random() * 2,
+            ease: "easeInOut",
+          }}
+        >
+          <Leaf 
+            size={16 + Math.random() * 12} 
+            style={{ color: COLORS.darkGreen }}
+            className="drop-shadow-lg"
+          />
+        </motion.div>
+      ))}
+      
+      {/* Tea Steam/Wisp Animations */}
+      {steamWisps.map((wisp, idx) => (
+        <motion.div
+          key={`steam-${idx}`}
+          className="absolute hidden md:block"
+          initial={{
+            left: `${20 + idx * 20}%`,
+            bottom: '10%',
+            opacity: 0,
+          }}
+          animate={prefersReducedMotion ? {} : {
+            y: [0, -50, -100, -150],
+            x: [0, Math.random() * 10 - 5, Math.random() * 10 - 5, 0],
+            scale: [0.8, 1, 1.2, 1.5],
+            opacity: [0, 0.4, 0.3, 0],
+          }}
+          transition={prefersReducedMotion ? {} : {
+            duration: 4 + Math.random() * 2,
+            repeat: Infinity,
+            delay: idx * 1.5 + Math.random(),
+            ease: "easeOut",
+          }}
+        >
+          <div 
+            className="w-1 h-16 rounded-full blur-sm"
+            style={{ 
+              background: `linear-gradient(to top, ${COLORS.cream}80, transparent)`,
+              boxShadow: `0 0 10px ${COLORS.cream}40`
+            }}
+          />
+        </motion.div>
+      ))}
+    </div>
+  );
+};
+
+// Trust Markers Component
+const TrustMarkers = () => {
+  const markers = [
+    "Supported by Gates Foundation",
+    "In Partnership with Darjeeling Welfare Society",
+    "Gorkhaland Territorial Administration",
+    "West Bengal State Rural Livelihoods Mission"
+  ];
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8, delay: 1.2 }}
+      className="absolute bottom-4 md:bottom-8 left-4 right-4 md:left-12 md:right-12 z-20 flex flex-wrap gap-2 md:gap-3 justify-center md:justify-start"
+    >
+      {markers.map((marker, idx) => (
+        <motion.div
+          key={idx}
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, delay: 1.4 + idx * 0.1 }}
+          className="px-3 py-1.5 md:px-4 md:py-2 rounded-full backdrop-blur-md bg-white/90 shadow-lg border border-white/50"
+        >
+          <span className="text-[10px] xs:text-xs md:text-sm font-semibold tracking-wide leading-tight" style={{ color: COLORS.darkGreen }}>
+            {marker}
+          </span>
+        </motion.div>
+      ))}
+    </motion.div>
+  );
+};
+
+// Impact Stats Bar Component
+const ImpactStatsBar = () => {
+  const stats = [
+    { value: "5,000+", label: "Households", icon: Users },
+    { value: "7", label: "Tea Estates", icon: MapPin },
+    { value: "100%", label: "Women-Led", icon: Heart },
+    { value: "Native", label: "Locally Sourced", icon: Leaf }
+  ];
+
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+
+  return (
+    <section 
+      ref={ref}
+      className="relative w-full py-8 md:py-12 px-6 z-10"
+      style={{ backgroundColor: COLORS.cream }}
+    >
+      <div className="max-w-7xl mx-auto">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+          {stats.map((stat, idx) => {
+            const IconComponent = stat.icon;
+            return (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 30 }}
+                animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+                transition={{ duration: 0.6, delay: idx * 0.1 }}
+                className="text-center"
+              >
+                <div className="flex justify-center mb-3">
+                  <div 
+                    className="w-16 h-16 rounded-full flex items-center justify-center shadow-lg"
+                    style={{ backgroundColor: COLORS.white }}
+                  >
+                    <IconComponent size={28} style={{ color: COLORS.darkGreen }} />
+                  </div>
+                </div>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+                  transition={{ duration: 0.8, delay: 0.3 + idx * 0.1 }}
+                >
+                  <h3 className="text-3xl md:text-4xl font-serif font-bold mb-1" style={{ color: COLORS.goldenYellow }}>
+                    {stat.value}
+                  </h3>
+                  <p className="text-sm md:text-base font-semibold tracking-wide" style={{ color: COLORS.darkGreen }}>
+                    {stat.label}
+                  </p>
+                </motion.div>
+              </motion.div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// Hero Section Component with Parallax
+const HeroSection = ({ scrollToSection }) => {
+  const heroRef = useRef(null);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    setPrefersReducedMotion(mediaQuery.matches);
+    
+    const handleChange = (e) => setPrefersReducedMotion(e.matches);
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, []);
+
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"]
+  });
+
+  const backgroundY = useTransform(scrollYProgress, [0, 1], prefersReducedMotion ? ["0%", "0%"] : ["0%", "50%"]);
+  const contentY = useTransform(scrollYProgress, [0, 1], prefersReducedMotion ? ["0%", "0%"] : ["0%", "30%"]);
+  const opacity = useTransform(scrollYProgress, [0, 0.5, 1], [1, 0.8, 0]);
+
+  return (
+    <header 
+      ref={heroRef}
+      className="relative w-full min-h-[75vh] sm:min-h-[80vh] md:min-h-[85vh] overflow-hidden z-10 flex items-center pt-16 md:pt-20"
+      role="banner"
+      aria-label="Hero section"
+    >
+      {/* Background Image with Parallax */}
+      <motion.div
+        className="absolute inset-0 z-0"
+        style={{ y: backgroundY }}
+        initial={{ scale: 1.05 }}
+        animate={{ scale: 1 }}
+        transition={{ duration: 1.5, ease: "easeOut" }}
+      >
+        <img 
+          src="/assets/hero-section-image.jpg" 
+          alt="Women from Darjeeling community showcasing locally produced products" 
+          className="w-full h-full object-cover"
+        />
+      </motion.div>
+
+      {/* Gradient Overlays for Text Readability */}
+      <motion.div 
+        className="absolute inset-0 z-1"
+        style={{
+          background: `linear-gradient(135deg, ${COLORS.darkGreen}E6 0%, ${COLORS.darkGreen}CC 30%, ${COLORS.darkGreen}99 60%, transparent 100%)`,
+          opacity
+        }}
+      />
+      <div 
+        className="absolute inset-0 z-1"
+        style={{
+          background: `linear-gradient(180deg, transparent 0%, ${COLORS.darkGreen}40 70%, ${COLORS.darkGreen}80 100%)`
+        }}
+      />
+
+      {/* Nepali-Tibetan Texture Overlay */}
+      <div className="absolute inset-0 z-2 nepali-texture paper-texture opacity-30" />
+
+      {/* Floating Tea Leaves */}
+      <FloatingTeaLeaves />
+
+      {/* Content Container with Parallax */}
+      <motion.div 
+        className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 py-12 sm:py-16 md:py-20"
+        style={{ y: contentY }}
+      >
+        <div className="max-w-3xl">
+          {/* Heading with Staggered Animation */}
+          <motion.h1
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="font-serif font-bold leading-[1.1] mb-3 md:mb-4 text-white drop-shadow-2xl"
+            style={{ 
+              fontSize: 'clamp(2rem, 5vw, 4.5rem)',
+            }}
+          >
+            Darjeeling's Heritage.
+            <br />
+            <motion.span
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+              style={{ 
+                color: COLORS.goldenYellow,
+                fontSize: 'clamp(1.75rem, 4.5vw, 3.75rem)',
+              }}
+            >
+              Handcrafted by Her.
+            </motion.span>
+          </motion.h1>
+
+          {/* Body Text */}
+          <motion.p
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
+            className="mb-5 md:mb-7 max-w-2xl text-white/95 drop-shadow-lg font-medium"
+            style={{ 
+              fontSize: 'clamp(1rem, 2vw, 1.375rem)',
+              lineHeight: '1.6',
+            }}
+          >
+            From the fiery heat of Dalle Chilli to the calm of Handrolled Green Tea, experience products made with resilience. We are a movement of 5,000 households across 7 tea estates, crafting world-class goods to restore dignity, income, and hope.
+          </motion.p>
+
+          {/* CTA Buttons */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
+            className="flex flex-col sm:flex-row gap-3 md:gap-4"
+          >
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => scrollToSection('collection')}
+              className="inline-flex items-center justify-center px-5 py-2.5 md:px-6 md:py-3 rounded-lg text-white font-semibold text-sm md:text-base tracking-wide shadow-xl transition-all"
+              style={{ backgroundColor: COLORS.darkGreen }}
+              aria-label="Explore Collection"
+            >
+              Explore Collection
+              <ArrowRight className="ml-2" size={18} />
+            </motion.button>
+            
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => scrollToSection('our-story')}
+              className="inline-flex items-center justify-center px-5 py-2.5 md:px-6 md:py-3 rounded-lg font-semibold text-sm md:text-base tracking-wide shadow-xl transition-all border-2 backdrop-blur-md bg-white/20 border-white/50 text-white hover:bg-white/30"
+              aria-label="Meet the Women"
+            >
+              Meet the Women
+              <Users className="ml-2" size={18} />
+            </motion.button>
+          </motion.div>
+        </div>
+      </motion.div>
+    </header>
+  );
+};
 
 // --- Product Detail Modal Component ---
 const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart }) => {
@@ -354,31 +690,42 @@ const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart }) => {
         </button>
 
         <div className="grid md:grid-cols-2 gap-0">
-          {/* Left Side - Image with 3D Effect */}
+          {/* Left Side - Image */}
           <div className="relative h-[400px] md:h-[600px] overflow-hidden rounded-t-3xl md:rounded-l-3xl md:rounded-tr-none bg-gradient-to-br from-gray-100 to-gray-200">
-            <div className="absolute inset-0 [perspective:1000px] group">
-              <div className="relative w-full h-full transform transition-transform duration-700 group-hover:[transform:rotateY(5deg)_rotateX(2deg)]">
-                <img 
-                  src={product.image} 
-                  alt={product.name}
-                  className="w-full h-full object-contain p-8 drop-shadow-2xl"
-                />
-              </div>
-            </div>
-            {/* Decorative Elements */}
-            <div className="absolute top-4 left-4 px-4 py-2 rounded-full backdrop-blur-md bg-white/80 shadow-lg">
-              <span className="text-xs font-bold tracking-wider uppercase" style={{ color: COLORS.darkGreen }}>
-                {product.category}
-              </span>
-            </div>
-            {/* Floating Badge */}
-            <div className="absolute bottom-6 left-6 px-6 py-3 rounded-2xl backdrop-blur-md bg-white/90 shadow-xl">
-              <div className="flex items-center space-x-2">
-                <MapPin size={18} style={{ color: COLORS.goldenYellow }} />
-                <span className="text-sm font-bold" style={{ color: COLORS.darkGreen }}>
-                  {product.teaGarden}
-                </span>
-              </div>
+            <div 
+              className="absolute inset-0 cursor-zoom-in"
+              onClick={(e) => {
+                e.stopPropagation();
+                // Zoom functionality - create zoom overlay
+                const zoomOverlay = document.createElement('div');
+                zoomOverlay.className = 'fixed inset-0 z-[200] bg-black/90 flex items-center justify-center p-4';
+                zoomOverlay.onclick = () => zoomOverlay.remove();
+                
+                const closeBtn = document.createElement('button');
+                closeBtn.className = 'absolute top-6 right-6 z-30 w-12 h-12 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-lg hover:bg-white transition-all';
+                closeBtn.style.color = COLORS.darkGreen;
+                closeBtn.innerHTML = '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>';
+                closeBtn.onclick = () => zoomOverlay.remove();
+                closeBtn.setAttribute('aria-label', 'Close zoom');
+                
+                const zoomImg = document.createElement('img');
+                zoomImg.src = product.image;
+                zoomImg.alt = product.name;
+                zoomImg.className = 'max-w-[90vw] max-h-[90vh] object-contain';
+                zoomImg.style.imageRendering = 'crisp-edges';
+                zoomImg.onclick = (e) => e.stopPropagation();
+                
+                zoomOverlay.appendChild(closeBtn);
+                zoomOverlay.appendChild(zoomImg);
+                document.body.appendChild(zoomOverlay);
+              }}
+            >
+              <img 
+                src={product.image} 
+                alt={product.name}
+                className="w-full h-full object-contain p-8"
+                style={{ imageRendering: 'crisp-edges' }}
+              />
             </div>
           </div>
 
@@ -514,12 +861,7 @@ const ProductCarousel = ({ onProductClick }) => {
   const paginationRef = useRef(null);
 
   return (
-    <div className="relative w-full max-w-7xl mx-auto py-2">
-      {/* Mobile hint text */}
-      <p className="md:hidden text-center text-sm text-gray-600 mb-4">
-        Swipe to explore
-      </p>
-
+    <div className="relative w-full max-w-7xl mx-auto py-1 overflow-visible">
       <Swiper
         modules={[Navigation, Pagination, Autoplay]}
         spaceBetween={0}
@@ -546,11 +888,11 @@ const ProductCarousel = ({ onProductClick }) => {
         breakpoints={{
           640: {
             slidesPerView: 3,
-            spaceBetween: 24,
+            spaceBetween: 16,
           },
           1024: {
             slidesPerView: 5,
-            spaceBetween: 24,
+            spaceBetween: 16,
           },
         }}
         className="product-swiper"
@@ -560,61 +902,52 @@ const ProductCarousel = ({ onProductClick }) => {
             <div className="product-card-wrapper">
               <div 
                 onClick={() => onProductClick(product)}
-                className="relative bg-white rounded-3xl overflow-hidden shadow-xl h-full border transition-all duration-500 cursor-pointer"
-                style={{ borderColor: COLORS.darkGreen }}
+                className="relative bg-gradient-to-br from-white via-gray-50 to-white rounded-3xl overflow-hidden shadow-2xl h-full border-2 transition-all duration-500 cursor-pointer product-card flex flex-col"
+                style={{ borderColor: 'rgba(3, 66, 37, 0.3)' }}
               >
-                {/* Image Container */}
-                <div className="relative h-36 md:h-40 overflow-hidden bg-gradient-to-br from-gray-50 via-white to-gray-50">
-                  <div className="absolute inset-0 bg-gradient-to-t from-white/80 via-transparent to-transparent z-10"></div>
+                {/* Image Container - 50% height, 100% width, no padding */}
+                <div className="relative flex-[0_0_50%] overflow-hidden bg-white">
                   <img 
                     src={product.image} 
                     alt={product.name} 
-                    className="w-full h-full object-contain p-5 relative z-0"
+                    className="w-full h-full object-contain m-0 p-0"
+                    style={{ imageRendering: 'crisp-edges' }}
                   />
                   
-                  {/* Category Badge */}
-                  <div className="absolute top-3 left-3 z-20">
-                    <div className="px-3 py-1.5 rounded-full backdrop-blur-lg bg-white/95 shadow-xl border border-white/50">
-                      <span className="text-xs font-bold tracking-wider uppercase" style={{ color: COLORS.darkGreen }}>
-                        {product.category}
-                      </span>
-                    </div>
-                  </div>
-
                   {/* Stock Badge */}
                   {!product.inStock && (
-                    <div className="absolute top-3 right-3 z-20">
-                      <div className="px-3 py-1.5 rounded-full bg-gradient-to-r from-red-500 to-red-600 backdrop-blur-lg shadow-xl border border-red-400/50">
-                        <span className="text-xs font-bold text-white">Out of Stock</span>
+                    <div className="absolute top-2 right-2 z-20">
+                      <div className="px-2 py-1 rounded-full bg-gradient-to-r from-red-500 to-red-600 backdrop-blur-lg shadow-xl border border-red-400/50">
+                        <span className="text-[10px] md:text-xs font-bold text-white">Out of Stock</span>
                       </div>
                     </div>
                   )}
                 </div>
                 
                 {/* Content Section */}
-                <div className="p-4 flex flex-col bg-white relative">
+                <div className="p-3 md:p-3.5 flex flex-col bg-white relative flex-1">
                   {/* Subtle Background Pattern */}
                   <div className="absolute inset-0 opacity-[0.02]"
                        style={{ 
                          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
                        }}></div>
                   
-                  <h3 className="text-lg font-serif font-bold mb-2 relative z-10" style={{ color: COLORS.darkGreen }}>
+                  <h3 className="text-sm md:text-base font-serif font-bold mb-1 relative z-10" style={{ color: COLORS.darkGreen }}>
                     {product.name}
                   </h3>
-                  <p className="text-gray-600 mb-3 text-sm line-clamp-2 flex-grow relative z-10 leading-relaxed">
+                  <p className="text-gray-600 mb-1.5 text-[10px] md:text-xs line-clamp-2 flex-grow relative z-10 leading-relaxed">
                     {product.desc}
                   </p>
                   
                   {/* Price Display */}
                   {product.inStock && product.variants && product.variants.length > 0 && (
-                    <div className="mb-3 relative z-10">
-                      <div className="flex items-baseline space-x-2">
-                        <p className="text-2xl font-serif font-bold" style={{ color: COLORS.goldenYellow }}>
+                    <div className="mb-1.5 relative z-10">
+                      <div className="flex items-baseline justify-between">
+                        <p className="text-lg md:text-xl font-serif font-bold" style={{ color: COLORS.goldenYellow }}>
                           ₹{product.variants[0].price}
                         </p>
+                        <p className="text-[10px] md:text-xs text-gray-500 font-medium">{product.variants[0].size}</p>
                       </div>
-                      <p className="text-xs text-gray-500 mt-0.5 font-medium">{product.variants[0].size}</p>
                     </div>
                   )}
                 </div>
@@ -648,12 +981,19 @@ const ProductCarousel = ({ onProductClick }) => {
       {/* Custom Styles */}
       <style>{`
         .product-swiper {
-          padding: 0 50px;
+          padding: 12px 30px 0 30px;
+          min-height: 100%;
+          overflow: visible;
+        }
+        
+        .product-swiper .swiper-wrapper {
+          align-items: center;
+          min-height: 100%;
         }
         
         @media (max-width: 640px) {
           .product-swiper {
-            padding: 0 40px;
+            padding: 10px 24px 0 24px;
           }
         }
 
@@ -664,16 +1004,27 @@ const ProductCarousel = ({ onProductClick }) => {
         }
 
         .product-card-wrapper {
-          transition: transform 0.5s ease, opacity 0.5s ease, filter 0.5s ease;
+          transition: transform 0.5s ease, opacity 0.5s ease;
           transform: scale(0.85);
           opacity: 0.4;
-          filter: blur(4px);
         }
 
         .swiper-slide-active .product-card-wrapper {
-          transform: scale(1);
+          transform: scale(1.05);
           opacity: 1;
-          filter: blur(0);
+          z-index: 10;
+        }
+
+        .swiper-slide-active .product-card {
+          border-color: ${COLORS.goldenYellow} !important;
+          border-width: 3px !important;
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 2px rgba(249, 176, 0, 0.6), 0 0 20px rgba(249, 176, 0, 0.3) !important;
+        }
+
+        @media (max-width: 640px) {
+          .swiper-slide-active .product-card-wrapper {
+            transform: scale(1.03);
+          }
         }
 
         /* Immediate neighbors (-1 and 1) - less faded */
@@ -681,14 +1032,12 @@ const ProductCarousel = ({ onProductClick }) => {
         .swiper-slide-next .product-card-wrapper {
           transform: scale(0.9);
           opacity: 0.6;
-          filter: blur(2px);
         }
 
         /* Further away cards (-2 and 2) - more faded */
         .swiper-slide:not(.swiper-slide-active):not(.swiper-slide-prev):not(.swiper-slide-next) .product-card-wrapper {
           transform: scale(0.85);
           opacity: 0.4;
-          filter: blur(4px);
         }
 
         /* Navigation button styles */
@@ -712,10 +1061,16 @@ const ProductCarousel = ({ onProductClick }) => {
         .swiper-pagination-custom {
           position: relative !important;
           text-align: center;
-          margin-top: 1.5rem;
+          margin-top: 2.5rem;
           display: flex;
           justify-content: center;
           gap: 8px;
+        }
+        
+        @media (max-width: 640px) {
+          .swiper-pagination-custom {
+            margin-top: 2rem;
+          }
         }
 
         .swiper-pagination-custom .swiper-pagination-bullet {
@@ -743,6 +1098,7 @@ const ProductCarousel = ({ onProductClick }) => {
 export default function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [flippedCards, setFlippedCards] = useState(new Set());
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState('home'); // 'home' or 'cart'
@@ -1036,8 +1392,7 @@ export default function App() {
       
       {/* --- Navigation --- */}
       <nav 
-        className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'py-2 shadow-md' : 'py-3'}`}
-        style={{ backgroundColor: scrolled ? COLORS.cream : 'transparent' }}
+        className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'py-1.5 shadow-md' : 'py-2'} bg-white`}
       >
         <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
           <div onClick={() => window.scrollTo(0,0)}>
@@ -1054,6 +1409,7 @@ export default function App() {
                   scrollToSection(item.toLowerCase().replace(/\s+/g, '-'));
                 }}
                 className="hover:opacity-70 transition-opacity relative group"
+                style={{ color: COLORS.darkGreen }}
               >
                 {item}
                 <span className="absolute -bottom-2 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full" style={{ backgroundColor: COLORS.goldenYellow }}></span>
@@ -1063,6 +1419,7 @@ export default function App() {
             <button
               onClick={() => setCurrentPage('cart')}
               className="relative hover:opacity-70 transition-opacity"
+              style={{ color: COLORS.darkGreen }}
               aria-label="Shopping Cart"
             >
               <ShoppingBag size={24} />
@@ -1117,50 +1474,12 @@ export default function App() {
       </nav>
 
       {/* --- Hero Section --- */}
-      <header className="relative pt-24 pb-24 md:pt-32 md:pb-40 px-6 overflow-hidden z-10">
-        <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
-          <div className="z-10 order-2 md:order-1">
-            <span className="inline-block px-4 py-2 rounded-full text-sm font-bold tracking-widest uppercase mb-6" style={{ backgroundColor: COLORS.goldenYellow, color: COLORS.darkGreen }}>
-              Ethically Sourced
-            </span>
-            <h1 className="text-5xl md:text-7xl font-serif font-bold leading-tight mb-8">
-              Purity from the <br /> 
-              <span className="italic" style={{ color: COLORS.goldenYellow }}>Himalayas</span>
-            </h1>
-            <p className="text-lg md:text-xl mb-10 max-w-lg leading-relaxed opacity-90">
-              Discover authentic products rooted in the traditions of Darjeeling. 
-              Grown with care, harvested with purpose, and brought directly to your home.
-            </p>
-            <button 
-              onClick={() => scrollToSection('collection')}
-              className="inline-flex items-center px-8 py-4 rounded-full text-white font-bold tracking-wide transition-transform hover:scale-105 shadow-lg"
-              style={{ backgroundColor: COLORS.darkGreen }}
-            >
-              Explore Collection <ArrowRight className="ml-2" size={20} />
-            </button>
-          </div>
-          
-          <div className="relative order-1 md:order-2">
-            {/* Abstract decorative shapes */}
-            <div className="absolute top-0 right-0 w-full h-full rounded-full opacity-20 filter blur-3xl transform translate-x-1/4 -translate-y-1/4" style={{ backgroundColor: COLORS.goldenYellow }}></div>
-            <img 
-              src="https://images.unsplash.com/photo-1597481499750-3e6b22637e12?q=80&w=1000&auto=format&fit=crop" 
-              alt="Tea Garden in Darjeeling" 
-              className="relative w-full h-[500px] object-cover rounded-[2rem] shadow-2xl z-10"
-            />
-            {/* Floating Badge */}
-            <div className="absolute -bottom-6 -left-6 z-20 bg-white p-6 rounded-2xl shadow-xl max-w-xs hidden md:block">
-              <p className="font-serif italic text-lg mb-2">"The soul of the mountains in every sip."</p>
-              <div className="flex text-yellow-500">★★★★★</div>
-            </div>
-          </div>
-        </div>
-      </header>
+      <HeroSection scrollToSection={scrollToSection} />
 
       {/* --- Products Section --- */}
-      <section id="collection" className="pt-12 md:pt-20 pb-20 md:pb-32 relative z-10">
+      <section id="collection" className="pt-6 md:pt-10 pb-12 md:pb-20 relative z-10 overflow-visible">
         <h2 
-          className="text-3xl md:text-5xl font-serif font-bold mb-4 md:mb-6 text-center"
+          className="text-2xl md:text-4xl font-serif font-bold mb-3 md:mb-4 text-center"
           style={{ color: COLORS.darkGreen }}
         >
           Collection
@@ -1177,46 +1496,62 @@ export default function App() {
       />
 
       {/* --- Our Tea Gardens Section --- */}
-      <section id="our-tea-gardens" className="pt-4 md:pt-8 pb-20 md:pb-32 bg-white relative z-10">
+      <section id="our-tea-gardens" className="pt-6 md:pt-10 pb-12 md:pb-20 bg-white relative z-10">
         <div className="max-w-7xl mx-auto px-6">
           <h2 
-            className="text-3xl md:text-5xl font-serif font-bold mb-4 md:mb-6 text-center"
+            className="text-2xl md:text-4xl font-serif font-bold mb-3 md:mb-4 text-center"
             style={{ color: COLORS.darkGreen }}
           >
             Our Tea Gardens
           </h2>
-          <p className="text-center max-w-3xl mx-auto mb-16 text-lg text-gray-700">
+          <p className="text-center max-w-3xl mx-auto mb-8 md:mb-10 text-base md:text-lg text-gray-700">
              Discover the soul of Darjeeling through the unique offerings of seven remarkable tea estates. 
              Each garden tells a story—of tradition, craftsmanship, and the women who bring these creations to life.
           </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {TEA_GARDENS.map((garden, idx) => {
               const IconComponent = TEA_GARDEN_ICONS[garden.name];
               const gradientClass = TEA_GARDEN_GRADIENTS[garden.name];
+              const isFlipped = flippedCards.has(idx);
+              
+              const handleCardClick = (e) => {
+                // Only handle click on mobile devices
+                if (window.innerWidth < 768) {
+                  e.stopPropagation();
+                  setFlippedCards(prev => {
+                    const newSet = new Set(prev);
+                    if (newSet.has(idx)) {
+                      newSet.delete(idx);
+                    } else {
+                      newSet.add(idx);
+                    }
+                    return newSet;
+                  });
+                }
+              };
               
               return (
               <div 
                 key={idx} 
-                className="group rounded-xl [perspective:1000px] relative animate-fade-in-up cursor-pointer" 
+                className="group rounded-xl [perspective:1000px] relative animate-fade-in-up cursor-pointer touch-manipulation" 
                 style={{
-                  height: '380px',
+                  height: '320px',
                   animationDelay: `${idx * 100}ms`,
                   animationFillMode: 'both'
                 }}
-                onClick={(e) => {
-                  // For mobile: toggle flip on click
-                  if (window.innerWidth < 768) {
-                    e.currentTarget.classList.toggle('flipped');
-                  }
-                }}
+                onClick={handleCardClick}
               >
-                <div className="relative w-full h-full transition-all duration-700 [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)] group-hover:scale-[1.02]">
+                <div className={`relative w-full h-full transition-all duration-700 [transform-style:preserve-3d] ${isFlipped ? '[transform:rotateY(180deg)]' : ''} md:group-hover:[transform:rotateY(180deg)] md:group-hover:scale-[1.02]`}>
                   {/* Front Face */}
-                  <div className="absolute w-full h-full [backface-visibility:hidden] rounded-xl overflow-hidden shadow-2xl bg-white flex flex-col border-2 transition-all duration-500"
-                       style={{ borderColor: COLORS.darkGreen + '20' }}>
+                  <div className="absolute w-full h-full [backface-visibility:hidden] rounded-xl overflow-hidden shadow-2xl bg-white flex flex-col border-2 transition-all duration-500 group-hover:shadow-3xl"
+                       style={{ 
+                         borderColor: COLORS.darkGreen + '30',
+                         boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
+                       }}>
                     {/* Icon Section with Gradient */}
-                    <div className={`relative h-40 bg-gradient-to-br ${gradientClass.front} overflow-hidden flex items-center justify-center`}>
+                    <div className={`relative h-28 md:h-30 bg-gradient-to-br ${gradientClass.front} overflow-hidden flex items-center justify-center border-b-2`}
+                         style={{ borderColor: COLORS.darkGreen + '15' }}>
                       {/* Decorative Tea Leaf Pattern - Very Subtle */}
                       <div className="absolute inset-0 opacity-[0.03]"
                            style={{ 
@@ -1227,36 +1562,44 @@ export default function App() {
                       <div className="relative z-10 transform transition-all duration-500 group-hover:scale-110 group-hover:rotate-6">
                         <div className="absolute inset-0 blur-2xl opacity-30" style={{ backgroundColor: COLORS.goldenYellow }}></div>
                         <IconComponent 
-                          size={70} 
+                          size={56} 
+                          className="md:w-[60px] md:h-[60px] drop-shadow-2xl relative"
                           style={{ color: COLORS.darkGreen }}
-                          className="drop-shadow-2xl relative"
                           strokeWidth={2.5}
                         />
                       </div>
                     </div>
                     {/* Content Section */}
-                    <div className="p-5 flex-grow flex flex-col bg-white relative">
+                    <div className="p-3 md:p-4 flex-grow flex flex-col bg-white relative">
                       <div className="flex items-center mb-2">
-                        <MapPin className="mr-2 flex-shrink-0" size={16} style={{ color: COLORS.goldenYellow }} />
-                        <h3 className="text-lg font-serif font-bold transition-colors" style={{ color: COLORS.darkGreen }}>{garden.name}</h3>
+                        <div className="p-1 rounded-full mr-2" style={{ backgroundColor: COLORS.goldenYellow + '20' }}>
+                          <MapPin className="flex-shrink-0" size={12} style={{ color: COLORS.goldenYellow }} />
+                        </div>
+                        <h3 className="text-base md:text-lg font-serif font-bold transition-colors" style={{ color: COLORS.darkGreen }}>{garden.name}</h3>
                       </div>
-                      <p className="text-gray-600 text-sm leading-relaxed line-clamp-3 flex-grow mb-3">{garden.desc}</p>
+                      <p className="text-gray-600 text-xs md:text-sm leading-relaxed line-clamp-3 flex-grow mb-3">{garden.desc}</p>
                       {/* Show More Button */}
                       <div className="flex justify-center mt-auto">
-                        <button className="px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 group-hover:scale-105 flex items-center gap-2"
-                                style={{ 
-                                  backgroundColor: COLORS.darkGreen + '10',
-                                  color: COLORS.darkGreen
-                                }}>
+                        <button 
+                          className="px-4 py-2 rounded-full text-[10px] md:text-xs font-bold uppercase tracking-wider transition-all duration-300 group-hover:scale-105 flex items-center gap-1.5 shadow-md hover:shadow-lg active:scale-95"
+                          style={{ 
+                            backgroundColor: COLORS.darkGreen,
+                            color: COLORS.white
+                          }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleCardClick();
+                          }}
+                        >
                           <span>Read Full Story</span>
-                          <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                          <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
                         </button>
                       </div>
                     </div>
                   </div>
  
                   {/* Back Face */}
-                  <div className={`absolute w-full h-full [backface-visibility:hidden] [transform:rotateY(180deg)] rounded-xl overflow-hidden shadow-2xl flex flex-col p-6 relative bg-gradient-to-br ${gradientClass.back}`}>
+                  <div className={`absolute w-full h-full [backface-visibility:hidden] [transform:rotateY(180deg)] rounded-xl overflow-hidden shadow-2xl flex flex-col p-3 md:p-4 relative bg-gradient-to-br ${gradientClass.back}`}>
                     {/* Decorative Tea Leaf Pattern Overlay - Very Subtle */}
                     <div className="absolute inset-0 opacity-[0.06]"
                          style={{ 
@@ -1266,34 +1609,46 @@ export default function App() {
                     {/* Subtle gradient overlay for depth */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
                     
-                    {/* Content */}
+                    {/* Content - No overflow, all content fits */}
                     <div className="relative z-10 flex flex-col h-full">
+                      {/* Mobile close button */}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleCardClick();
+                        }}
+                        className="md:hidden absolute top-2 right-2 z-20 w-8 h-8 rounded-full bg-white/30 backdrop-blur-sm flex items-center justify-center shadow-lg active:scale-95 transition-transform"
+                        aria-label="Close"
+                      >
+                        <X size={16} className="text-white" />
+                      </button>
+                      
                       {/* Header with icon and name */}
-                      <div className="flex items-center mb-4 pb-3 border-b-2 border-white/30">
-                        <div className="p-2 rounded-lg bg-white/20 backdrop-blur-sm mr-3 shadow-lg">
-                          <IconComponent size={20} style={{ color: '#fff' }} strokeWidth={2.5} />
+                      <div className="flex items-center mb-2 pb-2 border-b-2 border-white/30 pr-8 md:pr-0">
+                        <div className="p-1.5 rounded-lg bg-white/25 backdrop-blur-sm mr-2 shadow-lg">
+                          <IconComponent size={16} className="md:w-[18px] md:h-[18px]" style={{ color: '#fff' }} strokeWidth={2.5} />
                         </div>
-                        <h3 className="text-lg font-serif font-bold text-white drop-shadow-lg">{garden.name}</h3>
+                        <h3 className="text-sm md:text-base font-serif font-bold text-white drop-shadow-lg leading-tight">{garden.name}</h3>
                       </div>
                       
-                      {/* Description - fixed height, no scrolling */}
-                      <div className="flex-grow flex items-center">
-                        <p className="text-white text-xs leading-relaxed font-medium md:font-bold drop-shadow-md"
+                      {/* Description - fits within available space, no scrolling */}
+                      <div className="flex-grow flex items-start pt-0.5">
+                        <p className="text-white text-[10px] md:text-[11px] leading-[1.4] font-medium md:font-bold drop-shadow-md"
                            style={{ 
-                             textShadow: '0 2px 4px rgba(0,0,0,0.3)'
+                             textShadow: '0 2px 4px rgba(0,0,0,0.4)'
                            }}>
                           {garden.desc}
                         </p>
                       </div>
                       
                       {/* Location badge at bottom */}
-                      <div className="mt-4 pt-3 border-t-2 border-white/30 flex items-center justify-between">
+                      <div className="mt-2 pt-2 border-t-2 border-white/30 flex items-center justify-between">
                         <div className="flex items-center">
-                          <MapPin size={14} className="mr-2 text-white drop-shadow" />
-                          <span className="text-xs font-bold text-white drop-shadow uppercase tracking-wider">Darjeeling</span>
+                          <MapPin size={12} className="mr-1.5 text-white drop-shadow" />
+                          <span className="text-[10px] md:text-xs font-bold text-white drop-shadow uppercase tracking-wider">Darjeeling</span>
                         </div>
-                        <div className="px-3 py-1 rounded-full bg-white/20 backdrop-blur-sm">
-                          <span className="text-xs font-bold text-white drop-shadow">Tea Estate</span>
+                        <div className="px-2.5 py-1 rounded-full bg-white/25 backdrop-blur-sm">
+                          <span className="text-[10px] md:text-xs font-bold text-white drop-shadow">Tea Estate</span>
                         </div>
                       </div>
                     </div>
@@ -1314,16 +1669,16 @@ export default function App() {
       </section>
 
       {/* --- Our Story Section --- */}
-      <section id="our-story" className="py-20 md:py-32 relative overflow-hidden z-10" style={{ backgroundColor: COLORS.cream }}>
+      <section id="our-story" className="pt-6 md:pt-10 pb-12 md:pb-20 relative overflow-hidden z-10" style={{ backgroundColor: COLORS.cream }}>
          {/* Decorative leaf background */}
-        <Leaf className="absolute top-10 right-10 w-64 h-64 text-green-800 opacity-5 rotate-45" />
+        <Leaf className="hidden md:block absolute top-10 right-10 w-64 h-64 text-green-800 opacity-5 rotate-45" />
 
         <div className="max-w-7xl mx-auto px-6">
-          <div className="grid md:grid-cols-2 gap-16 items-center">
+          <div className="grid md:grid-cols-2 gap-6 md:gap-8 items-center">
             <div className="relative group">
               {/* Decorative floating elements */}
-              <div className="absolute -top-6 -left-6 w-24 h-24 rounded-full opacity-20 blur-xl transition-all duration-700 group-hover:opacity-30 group-hover:scale-110" style={{ backgroundColor: COLORS.goldenYellow }}></div>
-              <div className="absolute -bottom-6 -right-6 w-32 h-32 rounded-full opacity-15 blur-2xl transition-all duration-700 group-hover:opacity-25 group-hover:scale-110" style={{ backgroundColor: COLORS.darkGreen }}></div>
+              <div className="absolute -top-4 -left-4 w-16 h-16 md:w-20 md:h-20 rounded-full opacity-20 blur-xl transition-all duration-700 group-hover:opacity-30 group-hover:scale-110" style={{ backgroundColor: COLORS.goldenYellow }}></div>
+              <div className="absolute -bottom-4 -right-4 w-20 h-20 md:w-24 md:h-24 rounded-full opacity-15 blur-2xl transition-all duration-700 group-hover:opacity-25 group-hover:scale-110" style={{ backgroundColor: COLORS.darkGreen }}></div>
               
               {/* Modern layered frame effect */}
               <div className="relative">
@@ -1331,7 +1686,7 @@ export default function App() {
                 <div className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-2xl" style={{ backgroundColor: COLORS.goldenYellow, transform: 'scale(1.05)' }}></div>
                 
                 {/* Main image container with modern styling */}
-                <div className="relative rounded-3xl overflow-hidden shadow-2xl bg-gradient-to-br from-white via-gray-50 to-gray-100 p-6 transform transition-all duration-500 group-hover:scale-[1.02]">
+                <div className="relative rounded-3xl overflow-hidden shadow-2xl bg-gradient-to-br from-white via-gray-50 to-gray-100 p-4 md:p-5 transform transition-all duration-500 group-hover:scale-[1.02]">
                   {/* Subtle inner border gradient */}
                   <div className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{ 
                     background: `linear-gradient(135deg, ${COLORS.goldenYellow}15 0%, transparent 50%, ${COLORS.darkGreen}10 100%)`,
@@ -1344,32 +1699,37 @@ export default function App() {
                     <img 
                       src="/assets/origins_bk.png" 
                       alt="Woman harvesting tea" 
-                      className="w-full h-[600px] object-contain transition-all duration-700 group-hover:scale-105"
+                      className="w-full h-[280px] md:h-[320px] object-contain transition-all duration-700 group-hover:scale-105"
                     />
                     
                     {/* Subtle corner accents */}
-                    <div className="absolute top-4 left-4 w-12 h-12 border-t-2 border-l-2 rounded-tl-lg opacity-30 transition-opacity duration-500 group-hover:opacity-50" style={{ borderColor: COLORS.goldenYellow }}></div>
-                    <div className="absolute top-4 right-4 w-12 h-12 border-t-2 border-r-2 rounded-tr-lg opacity-30 transition-opacity duration-500 group-hover:opacity-50" style={{ borderColor: COLORS.goldenYellow }}></div>
-                    <div className="absolute bottom-4 left-4 w-12 h-12 border-b-2 border-l-2 rounded-bl-lg opacity-30 transition-opacity duration-500 group-hover:opacity-50" style={{ borderColor: COLORS.goldenYellow }}></div>
-                    <div className="absolute bottom-4 right-4 w-12 h-12 border-b-2 border-r-2 rounded-br-lg opacity-30 transition-opacity duration-500 group-hover:opacity-50" style={{ borderColor: COLORS.goldenYellow }}></div>
+                    <div className="absolute top-3 left-3 md:top-4 md:left-4 w-8 h-8 md:w-10 md:h-10 border-t-2 border-l-2 rounded-tl-lg opacity-30 transition-opacity duration-500 group-hover:opacity-50" style={{ borderColor: COLORS.goldenYellow }}></div>
+                    <div className="absolute top-3 right-3 md:top-4 md:right-4 w-8 h-8 md:w-10 md:h-10 border-t-2 border-r-2 rounded-tr-lg opacity-30 transition-opacity duration-500 group-hover:opacity-50" style={{ borderColor: COLORS.goldenYellow }}></div>
+                    <div className="absolute bottom-3 left-3 md:bottom-4 md:left-4 w-8 h-8 md:w-10 md:h-10 border-b-2 border-l-2 rounded-bl-lg opacity-30 transition-opacity duration-500 group-hover:opacity-50" style={{ borderColor: COLORS.goldenYellow }}></div>
+                    <div className="absolute bottom-3 right-3 md:bottom-4 md:right-4 w-8 h-8 md:w-10 md:h-10 border-b-2 border-r-2 rounded-br-lg opacity-30 transition-opacity duration-500 group-hover:opacity-50" style={{ borderColor: COLORS.goldenYellow }}></div>
                   </div>
                 </div>
                 
                 {/* Floating decorative leaf elements */}
-                <div className="absolute -top-8 -right-8 w-16 h-16 opacity-10 group-hover:opacity-20 transition-all duration-700 group-hover:rotate-12">
-                  <Leaf size={64} style={{ color: COLORS.darkGreen }} />
+                <div className="absolute -top-6 -right-6 md:-top-8 md:-right-8 w-12 h-12 md:w-16 md:h-16 opacity-10 group-hover:opacity-20 transition-all duration-700 group-hover:rotate-12">
+                  <Leaf size={48} className="md:w-16 md:h-16" style={{ color: COLORS.darkGreen }} />
                 </div>
-                <div className="absolute -bottom-8 -left-8 w-12 h-12 opacity-10 group-hover:opacity-20 transition-all duration-700 group-hover:-rotate-12">
-                  <Leaf size={48} style={{ color: COLORS.goldenYellow }} />
+                <div className="absolute -bottom-6 -left-6 md:-bottom-8 md:-left-8 w-10 h-10 md:w-12 md:h-12 opacity-10 group-hover:opacity-20 transition-all duration-700 group-hover:-rotate-12">
+                  <Leaf size={36} className="md:w-12 md:h-12" style={{ color: COLORS.goldenYellow }} />
                 </div>
               </div>
             </div>
             
             <div>
-              <h3 className="text-sm font-bold tracking-widest uppercase mb-4" style={{ color: COLORS.goldenYellow }}>Our Origins</h3>
-              <SectionHeading align="left">Rooted in Darjeeling</SectionHeading>
+              <h3 className="text-sm font-bold tracking-widest uppercase mb-1.5" style={{ color: COLORS.goldenYellow }}>Our Origins</h3>
+              <h2 
+                className="text-2xl md:text-4xl font-serif font-bold mb-4 md:mb-5 text-left"
+                style={{ color: COLORS.darkGreen }}
+              >
+                Rooted in Darjeeling
+              </h2>
               
-              <div className="space-y-6 text-lg leading-relaxed text-gray-700">
+              <div className="space-y-3 text-sm md:text-base leading-relaxed text-gray-700">
                 <p>
                   In the last decade, tea estates in and around Darjeeling were shut down due to absentee ownership, mismanagement, and unrest—leaving generations of tea workers, especially women, without income or support. The closures triggered distress migration and eroded local livelihoods. Climate change and ageing bushes deepened the crisis.
                 </p>
@@ -1380,49 +1740,43 @@ export default function App() {
                   <strong style={{ color: COLORS.darkGreen }}>Gharelu Origins</strong> is the result of these efforts—a brand born of heritage, heart, and the unwavering spirit of Darjeeling’s people. From their homes, women now craft the finest products, reviving income, dignity, and hope.
                 </p>
               </div>
-
-              <div className="mt-10 pt-10 border-t border-gray-300 grid grid-cols-2 gap-8">
-                <div>
-                  <h4 className="text-4xl font-serif font-bold mb-2" style={{ color: COLORS.goldenYellow }}>5,000+</h4>
-                  <p className="text-sm uppercase tracking-wider">Households Touched</p>
-                </div>
-                <div>
-                  <h4 className="text-4xl font-serif font-bold mb-2" style={{ color: COLORS.goldenYellow }}>100%</h4>
-                  <p className="text-sm uppercase tracking-wider">Community Led</p>
-                </div>
-              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* --- Our Impact Section --- */}
-      <section id="impact" className="py-20 md:py-32 relative bg-white z-10">
+      <section id="impact" className="pt-6 md:pt-10 pb-12 md:pb-20 relative bg-white z-10">
         <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
         
         <div className="max-w-7xl mx-auto px-6 relative z-10">
-          <SectionHeading>Our Impact</SectionHeading>
-          <p className="text-center max-w-3xl mx-auto mb-16 text-lg">
+          <h2 
+            className="text-2xl md:text-4xl font-serif font-bold mb-3 md:mb-4 text-center"
+            style={{ color: COLORS.darkGreen }}
+          >
+            Our Impact
+          </h2>
+          <p className="text-center max-w-3xl mx-auto mb-6 md:mb-8 text-base md:text-lg">
              Over 5,000 households touched through training and support to create unique, value-added products using local resources. We are reviving income, dignity, and hope for the communities of Darjeeling.
           </p>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-6">
             {IMPACT_STATS.map((stat, idx) => (
               <div 
                 key={idx} 
-                className="bg-gray-50 p-10 rounded-3xl shadow-sm hover:shadow-xl transition-shadow text-center group border border-transparent hover:border-green-100"
+                className="bg-gray-50 p-4 md:p-6 rounded-3xl shadow-sm hover:shadow-xl transition-shadow text-center group border border-transparent hover:border-green-100"
               >
                 <div 
-                  className="w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300"
+                  className="w-16 h-16 md:w-[72px] md:h-[72px] mx-auto rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300"
                   style={{ backgroundColor: COLORS.cream }}
                 >
-                  <stat.icon size={36} style={{ color: COLORS.darkGreen }} />
+                  <stat.icon size={28} className="md:w-8 md:h-8" style={{ color: COLORS.darkGreen }} />
                 </div>
-                <h3 className="text-5xl font-serif font-bold mb-4" style={{ color: COLORS.goldenYellow }}>
+                <h3 className="text-4xl md:text-5xl font-serif font-bold mb-1.5" style={{ color: COLORS.goldenYellow }}>
                   {stat.value}
                 </h3>
-                <h4 className="text-xl font-bold mb-2" style={{ color: COLORS.darkGreen }}>{stat.label}</h4>
-                <p className="text-sm text-gray-500">Restoring livelihoods and creating sustainable futures.</p>
+                <h4 className="text-lg md:text-xl font-bold mb-1.5" style={{ color: COLORS.darkGreen }}>{stat.label}</h4>
+                <p className="text-xs md:text-sm text-gray-500">Restoring livelihoods and creating sustainable futures.</p>
               </div>
             ))}
           </div>
