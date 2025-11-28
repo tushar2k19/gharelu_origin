@@ -239,7 +239,7 @@ const SOCIAL_LINKS = [
 
 const Logo = () => (
   <div className="flex flex-col items-center justify-center font-serif tracking-widest text-center cursor-pointer select-none">
-    <img src="Logo.jpg" alt="Gharelu Origins" className="h-16 md:h-20" />
+    <img src="/assets/Gharelu Origins.svg" alt="Gharelu Origins" className="h-10 md:h-12" />
   </div>
 );
 
@@ -852,7 +852,7 @@ export default function App() {
       <>
         {/* Navigation for Cart Page */}
         <nav 
-          className={`fixed w-full z-50 transition-all duration-300 py-4 shadow-md`}
+          className={`fixed w-full z-50 transition-all duration-300 py-2 shadow-md`}
           style={{ backgroundColor: COLORS.cream }}
         >
           <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
@@ -886,11 +886,61 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen font-sans" style={{ backgroundColor: COLORS.cream, color: COLORS.darkGreen }}>
+    <div className="min-h-screen font-sans relative overflow-hidden" style={{ backgroundColor: COLORS.cream, color: COLORS.darkGreen }}>
+      
+      {/* Decorative Background Leaves */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div 
+          style={{ 
+            position: 'absolute',
+            top: '15%', 
+            left: '5%', 
+            transform: 'rotate(-25deg)',
+            opacity: 0.15
+          }}
+        >
+          <Leaf 
+            size={120} 
+            color={COLORS.darkGreen}
+            strokeWidth={1}
+          />
+        </div>
+        <div 
+          style={{ 
+            position: 'absolute',
+            top: '60%', 
+            right: '8%', 
+            transform: 'rotate(45deg)',
+            opacity: 0.15
+          }}
+        >
+          <Leaf 
+            size={100} 
+            color={COLORS.darkGreen}
+            strokeWidth={1}
+          />
+        </div>
+        <div 
+          className="hidden md:block"
+          style={{ 
+            position: 'absolute',
+            bottom: '20%', 
+            left: '10%', 
+            transform: 'rotate(15deg)',
+            opacity: 0.15
+          }}
+        >
+          <Leaf 
+            size={140} 
+            color={COLORS.darkGreen}
+            strokeWidth={1}
+          />
+        </div>
+      </div>
       
       {/* --- Navigation --- */}
       <nav 
-        className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'py-4 shadow-md' : 'py-6'}`}
+        className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'py-2 shadow-md' : 'py-3'}`}
         style={{ backgroundColor: scrolled ? COLORS.cream : 'transparent' }}
       >
         <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
@@ -899,7 +949,7 @@ export default function App() {
           </div>
 
           {/* Desktop Menu */}
-          <div className="hidden md:flex items-center space-x-12 font-medium tracking-wide">
+          <div className="hidden md:flex items-center space-x-8 font-medium tracking-wide text-sm">
             {['Collection', 'Our Tea Gardens', 'Our Story', 'Impact'].map((item) => (
               <button 
                 key={item} 
@@ -952,7 +1002,7 @@ export default function App() {
 
         {/* Mobile Menu Dropdown */}
         {isMenuOpen && (
-          <div className="md:hidden absolute top-full left-0 w-full bg-white shadow-xl py-8 px-6 flex flex-col space-y-6">
+          <div className="md:hidden absolute top-full left-0 w-full bg-white shadow-xl py-4 px-6 flex flex-col space-y-4">
             {['Collection', 'Our Tea Gardens', 'Our Story', 'Impact'].map((item) => (
               <button 
                 key={item}
@@ -971,7 +1021,7 @@ export default function App() {
       </nav>
 
       {/* --- Hero Section --- */}
-      <header className="relative pt-32 pb-20 md:pt-48 md:pb-32 px-6 overflow-hidden">
+      <header className="relative pt-24 pb-16 md:pt-32 md:pb-24 px-6 overflow-hidden z-10">
         <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
           <div className="z-10 order-2 md:order-1">
             <span className="inline-block px-4 py-2 rounded-full text-sm font-bold tracking-widest uppercase mb-6" style={{ backgroundColor: COLORS.goldenYellow, color: COLORS.darkGreen }}>
@@ -1012,7 +1062,7 @@ export default function App() {
       </header>
 
       {/* --- Products Section --- */}
-      <section id="collection" className="py-20 md:py-32">
+      <section id="collection" className="py-20 md:py-32 relative z-10">
         <SectionHeading>Collection</SectionHeading>
         <ProductCarousel onProductClick={handleProductClick} />
       </section>
@@ -1026,7 +1076,7 @@ export default function App() {
       />
 
       {/* --- Our Tea Gardens Section --- */}
-      <section id="our-tea-gardens" className="py-20 md:py-32 bg-white">
+      <section id="our-tea-gardens" className="py-20 md:py-32 bg-white relative z-10">
         <div className="max-w-7xl mx-auto px-6">
           <SectionHeading>Our Tea Gardens</SectionHeading>
           <p className="text-center max-w-3xl mx-auto mb-16 text-lg text-gray-700">
@@ -1093,7 +1143,7 @@ export default function App() {
       </section>
 
       {/* --- Our Story Section --- */}
-      <section id="our-story" className="py-20 md:py-32 relative overflow-hidden" style={{ backgroundColor: COLORS.cream }}>
+      <section id="our-story" className="py-20 md:py-32 relative overflow-hidden z-10" style={{ backgroundColor: COLORS.cream }}>
          {/* Decorative leaf background */}
         <Leaf className="absolute top-10 right-10 w-64 h-64 text-green-800 opacity-5 rotate-45" />
 
@@ -1140,7 +1190,7 @@ export default function App() {
       </section>
 
       {/* --- Our Impact Section --- */}
-      <section id="impact" className="py-20 md:py-32 relative bg-white">
+      <section id="impact" className="py-20 md:py-32 relative bg-white z-10">
         <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
         
         <div className="max-w-7xl mx-auto px-6 relative z-10">
@@ -1173,27 +1223,27 @@ export default function App() {
       </section>
 
       {/* --- Footer --- */}
-      <footer className="text-white py-16 px-6" style={{ backgroundColor: COLORS.darkGreen }}>
-        <div className="max-w-7xl mx-auto grid md:grid-cols-3 gap-12 border-b border-green-800 pb-12">
+      <footer className="text-white py-8 px-6 relative z-10" style={{ backgroundColor: COLORS.darkGreen }}>
+        <div className="max-w-7xl mx-auto grid md:grid-cols-3 gap-8 border-b border-green-800 pb-6">
           {/* Column 1: Info & Social */}
           <div className="md:col-span-1">
-             <div className="flex items-center space-x-2 mb-6">
-                <Leaf className="text-white" size={24} />
-                <span className="font-serif font-bold text-xl tracking-wider">GHARELU ORIGINS</span>
+             <div className="flex items-center space-x-2 mb-3">
+                <Leaf className="text-white" size={18} />
+                <span className="font-serif font-bold text-base tracking-wider">GHARELU ORIGINS</span>
              </div>
-             <p className="text-green-200 text-sm leading-relaxed mb-6">
+             <p className="text-green-200 text-xs leading-relaxed mb-4">
                Rooted in Darjeeling, Grown with Purpose. Bringing the Himalayas to your doorstep.
              </p>
-             <div className="flex space-x-4">
+             <div className="flex space-x-3">
                {SOCIAL_LINKS.map((social, i) => (
                  <a 
                     key={i} 
                     href={social.url} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="w-10 h-10 rounded-full bg-green-800 flex items-center justify-center hover:bg-white hover:text-green-900 transition-colors"
+                    className="w-8 h-8 rounded-full bg-green-800 flex items-center justify-center hover:bg-white hover:text-green-900 transition-colors"
                  >
-                   <social.icon size={18} />
+                   <social.icon size={14} />
                  </a>
                ))}
              </div>
@@ -1201,8 +1251,8 @@ export default function App() {
 
           {/* Column 2: Company */}
           <div>
-            <h4 className="font-bold mb-6 text-green-300 uppercase tracking-widest text-sm">Company</h4>
-            <ul className="space-y-4 text-green-100 text-sm">
+            <h4 className="font-bold mb-3 text-green-300 uppercase tracking-widest text-xs">Company</h4>
+            <ul className="space-y-2 text-green-100 text-xs">
               <li><a href="#" className="hover:text-white transition-colors">About Us</a></li>
               <li><a href="#" className="hover:text-white transition-colors">Privacy Policy</a></li>
             </ul>
@@ -1210,16 +1260,16 @@ export default function App() {
 
           {/* Column 3: Newsletter */}
           <div>
-            <h4 className="font-bold mb-6 text-green-300 uppercase tracking-widest text-sm">Newsletter</h4>
-            <p className="text-green-200 text-sm mb-4">Join our community for harvest updates.</p>
+            <h4 className="font-bold mb-3 text-green-300 uppercase tracking-widest text-xs">Newsletter</h4>
+            <p className="text-green-200 text-xs mb-3">Join our community for harvest updates.</p>
             <div className="flex">
               <input 
                 type="email" 
                 placeholder="Your email" 
-                className="w-full px-4 py-3 rounded-l-lg bg-green-800 border-none text-white placeholder-green-400 focus:ring-2 focus:ring-yellow-500 focus:outline-none"
+                className="w-full px-3 py-2 text-xs rounded-l-lg bg-green-800 border-none text-white placeholder-green-400 focus:ring-2 focus:ring-yellow-500 focus:outline-none"
               />
               <button 
-                className="px-6 py-3 rounded-r-lg font-bold transition-colors hover:bg-yellow-400"
+                className="px-4 py-2 text-xs rounded-r-lg font-bold transition-colors hover:bg-yellow-400"
                 style={{ backgroundColor: COLORS.goldenYellow, color: COLORS.darkGreen }}
               >
                 Join
@@ -1227,7 +1277,7 @@ export default function App() {
             </div>
           </div>
         </div>
-        <div className="max-w-7xl mx-auto pt-8 text-center text-green-400 text-xs">
+        <div className="max-w-7xl mx-auto pt-4 text-center text-green-400 text-xs">
           &copy; {new Date().getFullYear()} Gharelu Origins. All rights reserved.
         </div>
       </footer>
