@@ -750,17 +750,31 @@ export default function App() {
     return localStorage.getItem('debug_ui_enabled') === 'true';
   });
 
+  // ============================================================================
+  // LAUNCH WRAPPER - TEMPORARILY DISABLED
+  // ============================================================================
+  // The launch wrapper feature is currently paused/disabled.
+  // To re-enable it, see: LAUNCH_WRAPPER_PAUSE.md
+  // 
+  // Current behavior: Always returns false (launch wrapper will never show)
+  // ============================================================================
   const [launchWrapperEnabled, setLaunchWrapperEnabled] = useState(() => {
-    // Show only on first visit ever, then respect manual override via debug button
-    const hasVisited = localStorage.getItem('has_visited_before');
-    if (hasVisited === null) {
-      return true; // First visit
-    }
-    // Subsequent visits: default to off unless enabled in storage
-    return localStorage.getItem('launch_wrapper_enabled') === 'true';
+    // TEMPORARILY DISABLED - Always return false
+    return false;
+    
+    // Original code (commented out for easy re-enable):
+    // // Show only on first visit ever, then respect manual override via debug button
+    // const hasVisited = localStorage.getItem('has_visited_before');
+    // if (hasVisited === null) {
+    //   return true; // First visit
+    // }
+    // // Subsequent visits: default to off unless enabled in storage
+    // return localStorage.getItem('launch_wrapper_enabled') === 'true';
   });
   
-  const [showWrapper, setShowWrapper] = useState(launchWrapperEnabled);
+  // if want to enable wrapper, then uncomment the following line and comment the hardcoded false line below
+  // const [showWrapper, setShowWrapper] = useState(launchWrapperEnabled);  
+  const [showWrapper, setShowWrapper] = useState(false); // Hardcoded to false - launch wrapper disabled
 
   useEffect(() => {
     localStorage.setItem('debug_ui_enabled', String(debugUIEnabled));
@@ -942,6 +956,8 @@ export default function App() {
 
   return (
     <div className="min-h-screen font-sans relative overflow-hidden" style={{ backgroundColor: COLORS.cream, color: COLORS.darkGreen }}>
+      {/* Launch Wrapper - Currently disabled (showWrapper is hardcoded to false) */}
+      {/* To re-enable, see: LAUNCH_WRAPPER_PAUSE.md */}
       <AnimatePresence>
         {showWrapper && (
           <LaunchWrapper onComplete={handleWrapperComplete} />
