@@ -7,10 +7,10 @@ export default {
     theme: {
       extend: {
         fontFamily: {
-          // New Order for headings and bold text
-          serif: ['New Order', 'serif'], 
-          // Benton Mod Display for body text
-          sans: ['Benton Mod Display', 'sans-serif'],
+          // Benton Mod Display for headings and bold text
+          serif: ['Benton Mod Display', 'serif'], 
+          // New Order for body text
+          sans: ['New Order', 'sans-serif'],
         },
         colors: {
           'dark-green': '#034225',

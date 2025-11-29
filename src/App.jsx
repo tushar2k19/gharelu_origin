@@ -62,35 +62,35 @@ const TEA_GARDEN_ICONS = {
   "Ambootia Tea Estate": Sparkles
 };
 
-// Gradient colors for each tea garden - richer, more saturated for better contrast
+// Gradient colors for each tea garden - keeping same colors on both sides
 const TEA_GARDEN_GRADIENTS = {
   "Samrikpani Tea Estate": { 
     front: "from-amber-300 via-orange-200 to-yellow-200",
-    back: "from-amber-800 via-orange-700 to-yellow-700"
+    back: "from-amber-300 via-orange-200 to-yellow-200"
   },
   "Peshok Tea Estate": { 
     front: "from-red-300 via-orange-300 to-amber-300",
-    back: "from-red-800 via-orange-800 to-amber-800"
+    back: "from-red-300 via-orange-300 to-amber-300"
   },
   "Moondakotee Tea Estate": { 
     front: "from-purple-300 via-indigo-300 to-blue-300",
-    back: "from-purple-800 via-indigo-800 to-blue-800"
+    back: "from-purple-300 via-indigo-300 to-blue-300"
   },
   "Mangarjung Tea Estate": { 
     front: "from-pink-300 via-rose-300 to-red-300",
-    back: "from-pink-800 via-rose-800 to-red-800"
+    back: "from-pink-300 via-rose-300 to-red-300"
   },
   "Panighata Tea Estate": { 
     front: "from-green-300 via-emerald-300 to-teal-300",
-    back: "from-green-800 via-emerald-800 to-teal-800"
+    back: "from-green-300 via-emerald-300 to-teal-300"
   },
   "Makaibari Tea Estate": { 
     front: "from-yellow-300 via-amber-300 to-orange-300",
-    back: "from-yellow-800 via-amber-800 to-orange-800"
+    back: "from-yellow-300 via-amber-300 to-orange-300"
   },
   "Ambootia Tea Estate": { 
     front: "from-blue-300 via-cyan-300 to-teal-300",
-    back: "from-blue-800 via-cyan-800 to-teal-800"
+    back: "from-blue-300 via-cyan-300 to-teal-300"
   }
 };
 
@@ -394,7 +394,7 @@ const HeroSection = ({ scrollToSection, navigate }) => {
 
       {/* Content Container with Parallax */}
       <motion.div 
-        className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 py-12 sm:py-16 md:py-20"
+        className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 py-8 sm:py-10 md:py-14"
         style={{ y: contentY }}
       >
         <div className="max-w-3xl">
@@ -403,7 +403,7 @@ const HeroSection = ({ scrollToSection, navigate }) => {
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="font-serif font-bold leading-[1.1] mb-3 md:mb-4 text-white drop-shadow-2xl"
+            className="font-serif font-bold leading-[1.1] mb-2 md:mb-3 text-white drop-shadow-2xl"
             style={{ 
               fontSize: 'clamp(2rem, 5vw, 4.5rem)',
             }}
@@ -428,13 +428,26 @@ const HeroSection = ({ scrollToSection, navigate }) => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
-            className="mb-5 md:mb-7 max-w-2xl text-white/95 drop-shadow-lg font-medium"
+            className="mb-3 md:mb-4 max-w-2xl text-white/95 drop-shadow-lg font-medium"
             style={{ 
               fontSize: 'clamp(1rem, 2vw, 1.375rem)',
               lineHeight: '1.6',
             }}
           >
             From the fiery heat of Dalle Chilli to the calm of Handrolled Green Tea, experience products made with resilience. We are a movement of 5,000 households across 7 tea estates, crafting world-class goods to restore dignity, income, and hope.
+          </motion.p>
+
+          {/* Supporting Organization */}
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
+            className="mb-4 md:mb-5 text-white/90 drop-shadow-lg font-medium italic"
+            style={{ 
+              fontSize: 'clamp(0.875rem, 1.5vw, 1.125rem)',
+            }}
+          >
+            Supported by Darjeeling Welfare Society
           </motion.p>
 
           {/* CTA Buttons */}
@@ -459,17 +472,6 @@ const HeroSection = ({ scrollToSection, navigate }) => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => scrollToSection('our-story')}
-              className="inline-flex items-center justify-center px-5 py-2.5 md:px-6 md:py-3 rounded-lg font-semibold text-sm md:text-base tracking-wide shadow-xl transition-all border-2 backdrop-blur-md bg-white/20 border-white/50 text-white hover:bg-white/30"
-              aria-label="Meet the Women"
-            >
-              Meet the Women
-              <Users className="ml-2" size={18} />
-            </motion.button>
-            
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
               onClick={() => navigate('/enquiry')}
               className="inline-flex items-center justify-center px-5 py-2.5 md:px-6 md:py-3 rounded-lg font-semibold text-sm md:text-base tracking-wide shadow-xl transition-all"
               style={{ 
@@ -478,7 +480,7 @@ const HeroSection = ({ scrollToSection, navigate }) => {
               }}
               aria-label="Enquiry"
             >
-              Enquiry
+              Enquiries
               <ArrowRight className="ml-2" size={18} />
             </motion.button>
           </motion.div>
@@ -1354,13 +1356,11 @@ export default function App() {
                           {/* Back Face */}
                           <div className={`absolute w-full h-full [backface-visibility:hidden] [transform:rotateY(180deg)] rounded-xl overflow-hidden shadow-2xl flex flex-col p-3 md:p-4 relative bg-gradient-to-br ${gradientClass.back}`}>
                             {/* Decorative Tea Leaf Pattern Overlay - Very Subtle */}
-                            <div className="absolute inset-0 opacity-[0.06]"
+                            <div className="absolute inset-0 opacity-[0.03]"
                                  style={{ 
-                                   backgroundImage: `url("data:image/svg+xml,%3Csvg width='300' height='300' viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cg%3E%3Cpath d='M150,100 Q155,85 160,100 Q165,115 160,130 Q155,145 150,130 Q145,115 150,100 Z' fill='%23ffffff' opacity='0.25'/%3E%3Cpath d='M150,100 L160,130' stroke='%23ffffff' stroke-width='1.5' opacity='0.3'/%3E%3Cpath d='M150,110 Q152,110 154,112' stroke='%23ffffff' stroke-width='0.8' fill='none' opacity='0.25'/%3E%3Cpath d='M150,120 Q152,120 154,122' stroke='%23ffffff' stroke-width='0.8' fill='none' opacity='0.25'/%3E%3C/g%3E%3C/svg%3E")`
+                                   backgroundImage: `url("data:image/svg+xml,%3Csvg width='300' height='300' viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cg%3E%3Cpath d='M150,100 Q155,85 160,100 Q165,115 160,130 Q155,145 150,130 Q145,115 150,100 Z' fill='%23000000' opacity='0.25'/%3E%3Cpath d='M150,100 L160,130' stroke='%23000000' stroke-width='1.5' opacity='0.3'/%3E%3Cpath d='M150,110 Q152,110 154,112' stroke='%23000000' stroke-width='0.8' fill='none' opacity='0.25'/%3E%3Cpath d='M150,120 Q152,120 154,122' stroke='%23000000' stroke-width='0.8' fill='none' opacity='0.25'/%3E%3C/g%3E%3C/svg%3E")`
                                  }}
                             ></div>
-                            {/* Subtle gradient overlay for depth */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
                             
                             {/* Content - No overflow, all content fits */}
                             <div className="relative z-10 flex flex-col h-full">
@@ -1370,38 +1370,35 @@ export default function App() {
                                   e.stopPropagation();
                                   handleCardClick();
                                 }}
-                                className="md:hidden absolute top-2 right-2 z-20 w-8 h-8 rounded-full bg-white/30 backdrop-blur-sm flex items-center justify-center shadow-lg active:scale-95 transition-transform"
+                                className="md:hidden absolute top-2 right-2 z-20 w-9 h-9 rounded-full bg-black/10 backdrop-blur-sm flex items-center justify-center shadow-lg active:scale-95 transition-transform"
                                 aria-label="Close"
                               >
-                                <X size={16} className="text-white" />
+                                <X size={18} className="text-gray-800" />
                               </button>
                               
                               {/* Header with icon and name */}
-                              <div className="flex items-center mb-2 pb-2 border-b-2 border-white/30 pr-8 md:pr-0">
-                                <div className="p-1.5 rounded-lg bg-white/25 backdrop-blur-sm mr-2 shadow-lg">
-                                  <IconComponent size={16} className="md:w-[18px] md:h-[18px]" style={{ color: '#fff' }} strokeWidth={2.5} />
+                              <div className="flex items-center mb-2.5 pb-2 border-b-2 border-gray-800/20 pr-10 md:pr-0">
+                                <div className="p-1.5 rounded-lg bg-white/40 backdrop-blur-sm mr-2.5 shadow-lg">
+                                  <IconComponent size={18} className="md:w-[22px] md:h-[22px]" style={{ color: COLORS.darkGreen }} strokeWidth={2.5} />
                                 </div>
-                                <h3 className="text-sm md:text-base font-serif font-bold text-white drop-shadow-lg leading-tight">{garden.name}</h3>
+                                <h3 className="text-[15px] md:text-[18px] font-serif font-bold text-gray-900 leading-tight">{garden.name}</h3>
                               </div>
                               
                               {/* Description - fits within available space, no scrolling */}
-                              <div className="flex-grow flex items-start pt-0.5">
-                                <p className="text-white text-[10px] md:text-[11px] leading-[1.4] font-medium md:font-bold drop-shadow-md"
-                                   style={{ 
-                                     textShadow: '0 2px 4px rgba(0,0,0,0.4)'
-                                   }}>
+                              <div className="flex-grow flex items-start pt-1">
+                                <p className="text-gray-900 text-[13px] md:text-[14px] leading-[1.45] font-medium md:font-bold">
                                   {garden.desc}
                                 </p>
                               </div>
                               
                               {/* Location badge at bottom */}
-                              <div className="mt-2 pt-2 border-t-2 border-white/30 flex items-center justify-between">
+                              <div className="mt-2.5 pt-2.5 border-t-2 border-gray-800/20 flex items-center justify-between">
                                 <div className="flex items-center">
-                                  <MapPin size={12} className="mr-1.5 text-white drop-shadow" />
-                                  <span className="text-[10px] md:text-xs font-bold text-white drop-shadow uppercase tracking-wider">Darjeeling</span>
+                                  <MapPin size={14} className="mr-1.5 text-gray-800" />
+                                  <span className="text-[13px] md:text-[14px] font-bold text-gray-800 uppercase tracking-wider">Darjeeling</span>
                                 </div>
-                                <div className="px-2.5 py-1 rounded-full bg-white/25 backdrop-blur-sm">
-                                  <span className="text-[10px] md:text-xs font-bold text-white drop-shadow">Tea Estate</span>
+                                <div className="px-3 py-1.5 rounded-full bg-white/40 backdrop-blur-sm">
+                                  <span className="text-[13px] md:text-[14px] font-bold text-gray-800">Tea Estate</span>
                                 </div>
                               </div>
                             </div>
@@ -1450,9 +1447,9 @@ export default function App() {
                           <div className="relative rounded-2xl overflow-hidden bg-white shadow-inner">
                             <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-black/5 pointer-events-none"></div>
                             <img 
-                              src="/assets/origins_bk.png" 
+                              src="/assets/hero-section-image.jpg" 
                               alt="Woman harvesting tea" 
-                              className="w-full h-[280px] md:h-[320px] object-contain transition-all duration-700 group-hover:scale-105"
+                              className="w-full h-[280px] md:h-[320px] object-cover transition-all duration-700 group-hover:scale-105"
                             />
                             
                             {/* Subtle corner accents */}
