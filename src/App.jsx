@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Menu, X, ChevronLeft, ChevronRight, Leaf, Heart, Globe, ArrowRight, Instagram, Facebook, Twitter, Linkedin, Users, MapPin, XCircle, ShoppingBag, Package, Coffee, Flame, Lightbulb, Apple, Recycle, Droplet, Sparkles, Mountain, Waves, Trash2, Minus, Plus, Settings, PlayCircle } from 'lucide-react';
+import { Menu, X, ChevronLeft, ChevronRight, Leaf, Heart, Globe, ArrowRight, Instagram, Facebook, Twitter, Linkedin, Users, MapPin, XCircle, ShoppingBag, Package, Coffee, Flame, Lightbulb, Apple, Recycle, Droplet, Sparkles, Mountain, Waves, Trash2, Minus, Plus } from 'lucide-react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 import { motion, useScroll, useTransform, useInView, AnimatePresence } from 'framer-motion';
@@ -711,102 +711,35 @@ export default function App() {
     return savedCart ? JSON.parse(savedCart) : { items: [], total: 0 };
   });
 
-  // Helper function to convert localStorage string to boolean
-  const parseLocalStorageBoolean = (value) => {
-    if (value === null || value === undefined) return true; // default to true
-    if (typeof value === 'boolean') return value; // already a boolean
-    return value === 'true' || value === true; // string 'true' or boolean true
-  };
-
-  // Debug Controls State
-  const [debugUIEnabled, setDebugUIEnabled] = useState(() => {
-    return parseLocalStorageBoolean(localStorage.getItem('debug_ui_enabled'));
-  });
-  const [launchWrapperEnabled, setLaunchWrapperEnabled] = useState(() => {
-    return parseLocalStorageBoolean(localStorage.getItem('launch_wrapper_enabled'));
-  });
-  const [showWrapper, setShowWrapper] = useState(launchWrapperEnabled);
-
-  // Listen for localStorage changes in real-time
-  useEffect(() => {
-    const handleStorageChange = (e) => {
-      // Storage event fires for cross-tab changes or manual localStorage changes
-      // e.newValue is always a string or null
-      if (e.key === 'debug_ui_enabled') {
-        const newValue = parseLocalStorageBoolean(e.newValue);
-        setDebugUIEnabled(newValue);
-      } else if (e.key === 'launch_wrapper_enabled') {
-        const newValue = parseLocalStorageBoolean(e.newValue);
-        setLaunchWrapperEnabled(newValue);
-      }
-    };
-
-    // Listen for custom events (same-tab changes from our code)
-    const handleCustomStorageChange = (e) => {
-      // Custom events pass the actual boolean value in e.detail.value
-      if (e.detail?.key === 'debug_ui_enabled') {
-        // Use the value directly since it's already a boolean from our code
-        setDebugUIEnabled(e.detail.value === true);
-      } else if (e.detail?.key === 'launch_wrapper_enabled') {
-        // Use the value directly since it's already a boolean from our code
-        setLaunchWrapperEnabled(e.detail.value === true);
-      }
-    };
-
-    // Listen for storage events (cross-tab changes or manual console changes)
-    window.addEventListener('storage', handleStorageChange);
-    // Listen for custom events (same-tab changes from our React code)
-    window.addEventListener('localStorageChange', handleCustomStorageChange);
-
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('localStorageChange', handleCustomStorageChange);
-    };
-  }, []);
-
-  // Update localStorage and dispatch custom event for same-tab updates
-  // Use a ref to track if this is the initial mount to prevent event loop
-  const isInitialMount = useRef(true);
-  
-  useEffect(() => {
-    // Skip on initial mount to prevent unnecessary events
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-      // Still save to localStorage on mount to ensure consistency
-      localStorage.setItem('debug_ui_enabled', String(debugUIEnabled));
-      return;
+  // Check if this is the first visit ever
+  const [showWrapper, setShowWrapper] = useState(() => {
+    const hasVisitedBefore = localStorage.getItem('has_visited_before');
+    if (hasVisitedBefore === null) {
+      // First visit ever - show wrapper and mark as visited
+      localStorage.setItem('has_visited_before', 'true');
+      return true;
     }
-    
-    // Save as string to localStorage
-    localStorage.setItem('debug_ui_enabled', String(debugUIEnabled));
-    // Dispatch custom event with boolean value for same-tab updates
-    window.dispatchEvent(new CustomEvent('localStorageChange', {
-      detail: { key: 'debug_ui_enabled', value: debugUIEnabled }
-    }));
-  }, [debugUIEnabled]);
-
-  const isInitialMountLaunch = useRef(true);
-  
-  useEffect(() => {
-    // Skip on initial mount to prevent unnecessary events
-    if (isInitialMountLaunch.current) {
-      isInitialMountLaunch.current = false;
-      // Still save to localStorage on mount to ensure consistency
-      localStorage.setItem('launch_wrapper_enabled', String(launchWrapperEnabled));
-      return;
-    }
-    
-    // Save as string to localStorage
-    localStorage.setItem('launch_wrapper_enabled', String(launchWrapperEnabled));
-    // Dispatch custom event with boolean value for same-tab updates
-    window.dispatchEvent(new CustomEvent('localStorageChange', {
-      detail: { key: 'launch_wrapper_enabled', value: launchWrapperEnabled }
-    }));
-  }, [launchWrapperEnabled]);
+    // Not first visit - check if manually enabled
+    const manuallyEnabled = localStorage.getItem('launch_wrapper_enabled');
+    return manuallyEnabled === 'true';
+  });
 
   const handleWrapperComplete = () => {
+    // After wrapper completes, disable it for future visits
+    localStorage.setItem('launch_wrapper_enabled', 'false');
     setShowWrapper(false);
   };
+
+  // Listen for manual localStorage changes (for testing/debugging)
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      if (e.key === 'launch_wrapper_enabled' && e.newValue === 'true') {
+        setShowWrapper(true);
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -947,7 +880,7 @@ export default function App() {
   return (
     <div className="min-h-screen font-sans relative overflow-hidden" style={{ backgroundColor: COLORS.cream, color: COLORS.darkGreen }}>
       <AnimatePresence>
-        {showWrapper && launchWrapperEnabled && (
+        {showWrapper && (
           <LaunchWrapper onComplete={handleWrapperComplete} />
         )}
       </AnimatePresence>
@@ -1106,32 +1039,6 @@ export default function App() {
           {/* Desktop Menu */}
           {location.pathname !== '/enquiry' && (
           <div className="hidden md:flex items-center space-x-8 font-medium tracking-wide text-sm">
-            {/* Debug Controls */}
-            {debugUIEnabled && (
-              <div className="hidden md:flex items-center space-x-2 mr-2 border-r pr-4 border-gray-200">
-                <button
-                  onClick={() => setLaunchWrapperEnabled(!launchWrapperEnabled)}
-                  className={`flex items-center gap-1.5 text-[10px] font-bold px-2 py-1 rounded-full transition-all ${
-                    launchWrapperEnabled 
-                      ? 'bg-green-100 text-green-800 ring-1 ring-green-300' 
-                      : 'bg-gray-100 text-gray-400'
-                  }`}
-                  title="Toggle Launch Animation on next reload"
-                >
-                  <PlayCircle size={12} />
-                  Wrapper: {launchWrapperEnabled ? 'ON' : 'OFF'}
-                </button>
-                <button
-                  onClick={() => setDebugUIEnabled(false)}
-                  className="flex items-center gap-1.5 text-[10px] font-bold px-2 py-1 rounded-full bg-gray-100 text-gray-500 hover:bg-red-50 hover:text-red-500 transition-colors"
-                  title="Hide these debug buttons"
-                >
-                  <Settings size={12} />
-                  Hide Debug
-                </button>
-              </div>
-            )}
-
             {['Collection', 'Our Tea Gardens', 'Our Story', 'Impact'].map((item) => (
               <button 
                 key={item} 
