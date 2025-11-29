@@ -276,7 +276,18 @@ const EnquiryPage = ({ cart, removeFromCart, updateQuantity, clearCart, onBackTo
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    
+    // Phone number validation: only numbers, max 10 digits
+    if (name === 'phone') {
+      // Remove all non-numeric characters
+      const numericValue = value.replace(/\D/g, '');
+      // Limit to 10 digits
+      const limitedValue = numericValue.slice(0, 10);
+      setFormData(prev => ({ ...prev, [name]: limitedValue }));
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
+    
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
