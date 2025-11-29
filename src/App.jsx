@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Menu, X, ChevronLeft, ChevronRight, Leaf, Heart, Globe, ArrowRight, Instagram, Facebook, Twitter, Linkedin, Users, MapPin, XCircle, ShoppingBag, Package, Coffee, Flame, Lightbulb, Apple, Recycle, Droplet, Sparkles, Mountain, Waves, Trash2, Minus, Plus } from 'lucide-react';
+import { Menu, X, ChevronLeft, ChevronRight, Leaf, Heart, Globe, ArrowRight, Instagram, Facebook, Twitter, Linkedin, Users, MapPin, XCircle, ShoppingBag, Package, Coffee, Flame, Lightbulb, Apple, Recycle, Droplet, Sparkles, Mountain, Waves, Trash2, Minus, Plus, Settings, PlayCircle, CheckCircle, Mail } from 'lucide-react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 import { motion, useScroll, useTransform, useInView, AnimatePresence } from 'framer-motion';
@@ -16,7 +16,7 @@ import LaunchWrapper from './LaunchWrapper';
 const TEA_GARDENS = [
   {
     name: "Samrikpani Tea Estate",
-    desc: "Nestled in the heart of Darjeeling, Samrikpani Tea Estate is home to the beloved Ama Ko Bhujia. Crafted by local SHG Didis, these crispy delights are more than snacks—they're a celebration of heritage and homely warmth. Whether it’s a quiet chai moment or a lively gathering, Samrik brings the hills to your plate.",
+    desc: "Nestled in the heart of Darjeeling, Samrikpani Tea Estate is home to the beloved Ama Ko Bhujia. Crafted by local SHG Didis, these crispy delights are more than snacks—they're a celebration of heritage and homely warmth. Whether it's a quiet chai moment or a lively gathering, Samrik brings the hills to your plate.",
     image: "https://images.unsplash.com/photo-1565551381226-724f2b904d9c?q=80&w=800&auto=format&fit=crop"
   },
   {
@@ -126,13 +126,27 @@ const Logo = () => (
   </div>
 );
 
-const SectionHeading = ({ children, align = "center" }) => (
-  <h2 
-    className={`text-3xl md:text-5xl font-serif font-bold mb-12 ${align === "left" ? "text-left" : "text-center"}`}
-    style={{ color: COLORS.darkGreen }}
-  >
-    {children}
-  </h2>
+const SectionHeading = ({ children, align = "center", className = "" }) => (
+    <div className={`flex flex-col ${align === 'center' ? 'items-center' : 'items-start'} ${className}`}>
+        <h2
+            className="text-2xl md:text-4xl font-serif font-bold"
+            style={{ color: COLORS.darkGreen }}
+        >
+            {children}
+        </h2>
+        {align === 'center' ? (
+            <div className="mt-2 flex items-center gap-3">
+                <div className="w-12 h-px bg-golden-yellow/70" />
+                <Leaf className="text-golden-yellow" size={20} strokeWidth={2}/>
+                <div className="w-12 h-px bg-golden-yellow/70" />
+            </div>
+        ) : (
+            <div className="mt-2 flex items-center gap-3">
+                <Leaf className="text-golden-yellow" size={20} strokeWidth={2}/>
+                <div className="w-24 h-px bg-golden-yellow/70" />
+            </div>
+        )}
+    </div>
 );
 
 // Floating Tea Leaves Component
@@ -313,7 +327,7 @@ const ImpactStatsBar = () => {
 };
 
 // Hero Section Component with Parallax
-const HeroSection = ({ scrollToSection }) => {
+const HeroSection = ({ scrollToSection, navigate }) => {
   const heroRef = useRef(null);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   
@@ -452,6 +466,21 @@ const HeroSection = ({ scrollToSection }) => {
               Meet the Women
               <Users className="ml-2" size={18} />
             </motion.button>
+            
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => navigate('/enquiry')}
+              className="inline-flex items-center justify-center px-5 py-2.5 md:px-6 md:py-3 rounded-lg font-semibold text-sm md:text-base tracking-wide shadow-xl transition-all"
+              style={{ 
+                backgroundColor: COLORS.goldenYellow,
+                color: COLORS.darkGreen
+              }}
+              aria-label="Enquiry"
+            >
+              Enquiry
+              <ArrowRight className="ml-2" size={18} />
+            </motion.button>
           </motion.div>
         </div>
       </motion.div>
@@ -529,17 +558,17 @@ const ProductCarousel = ({ onProductClick }) => {
                 </div>
                 
                 {/* Content Section */}
-                <div className="p-3 md:p-3.5 flex flex-col bg-white relative flex-1">
+                <div className="p-2 md:p-2.5 flex flex-col bg-white relative flex-1">
                   {/* Subtle Background Pattern */}
                   <div className="absolute inset-0 opacity-[0.02]"
                        style={{ 
                          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
                        }}></div>
                   
-                  <h3 className="text-sm md:text-base font-serif font-bold mb-1 relative z-10" style={{ color: COLORS.darkGreen }}>
+                  <h3 className="text-xs md:text-sm font-serif font-bold mb-1 relative z-10" style={{ color: COLORS.darkGreen }}>
                     {product.name}
                   </h3>
-                  <p className="text-gray-600 mb-1.5 text-[10px] md:text-xs line-clamp-2 flex-grow relative z-10 leading-relaxed">
+                  <p className="text-gray-600 mb-1.5 text-[10px] line-clamp-2 flex-grow relative z-10 leading-relaxed">
                     {product.desc}
                   </p>
                   
@@ -547,7 +576,7 @@ const ProductCarousel = ({ onProductClick }) => {
                   {product.inStock && product.variants && product.variants.length > 0 && (
                     <div className="mb-1.5 relative z-10">
                       <div className="flex items-baseline justify-between">
-                        <p className="text-lg md:text-xl font-serif font-bold" style={{ color: COLORS.goldenYellow }}>
+                        <p className="text-base md:text-lg font-serif font-bold" style={{ color: COLORS.goldenYellow }}>
                           ₹{product.variants[0].price}
                         </p>
                         <p className="text-[10px] md:text-xs text-gray-500 font-medium">{product.variants[0].size}</p>
@@ -710,24 +739,56 @@ export default function App() {
     const savedCart = localStorage.getItem('gharelu_cart');
     return savedCart ? JSON.parse(savedCart) : { items: [], total: 0 };
   });
+  const [newsletterEmail, setNewsletterEmail] = useState('');
+  const [showNewsletterToast, setShowNewsletterToast] = useState(false);
 
-  // Check if this is the first visit ever
-  const [showWrapper, setShowWrapper] = useState(() => {
-    const hasVisitedBefore = localStorage.getItem('has_visited_before');
-    if (hasVisitedBefore === null) {
-      // First visit ever - show wrapper and mark as visited
-      localStorage.setItem('has_visited_before', 'true');
-      return true;
-    }
-    // Not first visit - check if manually enabled
-    const manuallyEnabled = localStorage.getItem('launch_wrapper_enabled');
-    return manuallyEnabled === 'true';
+  // Debug Controls State
+  const [debugUIEnabled, setDebugUIEnabled] = useState(() => {
+    // Default to false unless explicitly set to 'true' in localStorage
+    return localStorage.getItem('debug_ui_enabled') === 'true';
   });
 
+  const [launchWrapperEnabled, setLaunchWrapperEnabled] = useState(() => {
+    // Show only on first visit ever, then respect manual override via debug button
+    const hasVisited = localStorage.getItem('has_visited_before');
+    if (hasVisited === null) {
+      return true; // First visit
+    }
+    // Subsequent visits: default to off unless enabled in storage
+    return localStorage.getItem('launch_wrapper_enabled') === 'true';
+  });
+  
+  const [showWrapper, setShowWrapper] = useState(launchWrapperEnabled);
+
+  useEffect(() => {
+    localStorage.setItem('debug_ui_enabled', String(debugUIEnabled));
+  }, [debugUIEnabled]);
+
+  useEffect(() => {
+    localStorage.setItem('launch_wrapper_enabled', String(launchWrapperEnabled));
+  }, [launchWrapperEnabled]);
+
   const handleWrapperComplete = () => {
-    // After wrapper completes, disable it for future visits
-    localStorage.setItem('launch_wrapper_enabled', 'false');
     setShowWrapper(false);
+    // After the first-ever launch, disable it for subsequent visits
+    const hasVisited = localStorage.getItem('has_visited_before');
+    if (hasVisited === null) {
+      localStorage.setItem('has_visited_before', 'true');
+      setLaunchWrapperEnabled(false);
+    }
+  };
+
+  const handleNewsletterSubmit = (e) => {
+    e.preventDefault();
+    if (newsletterEmail.trim()) {
+      // Show toast notification
+      setShowNewsletterToast(true);
+      setNewsletterEmail('');
+      // Hide toast after 3 seconds
+      setTimeout(() => {
+        setShowNewsletterToast(false);
+      }, 3000);
+    }
   };
 
   // Listen for manual localStorage changes (for testing/debugging)
@@ -1039,6 +1100,31 @@ export default function App() {
           {/* Desktop Menu */}
           {location.pathname !== '/enquiry' && (
           <div className="hidden md:flex items-center space-x-8 font-medium tracking-wide text-sm">
+            {/* Debug Controls */}
+            {debugUIEnabled && (
+              <div className="hidden md:flex items-center space-x-2 mr-2 border-r pr-4 border-gray-200">
+                <button
+                  onClick={() => setLaunchWrapperEnabled(!launchWrapperEnabled)}
+                  className={`flex items-center gap-1.5 text-[10px] font-bold px-2 py-1 rounded-full transition-all ${
+                    launchWrapperEnabled 
+                      ? 'bg-green-100 text-green-800 ring-1 ring-green-300' 
+                      : 'bg-gray-100 text-gray-400'
+                  }`}
+                  title="Toggle Launch Animation on next reload"
+                >
+                  <PlayCircle size={12} />
+                  Wrapper: {launchWrapperEnabled ? 'ON' : 'OFF'}
+                </button>
+                <button
+                  onClick={() => setDebugUIEnabled(false)}
+                  className="flex items-center gap-1.5 text-[10px] font-bold px-2 py-1 rounded-full bg-gray-100 text-gray-500 hover:bg-red-50 hover:text-red-500 transition-colors"
+                  title="Hide these debug buttons"
+                >
+                  <Settings size={12} />
+                  Hide Debug
+                </button>
+              </div>
+            )}
             {['Collection', 'Our Tea Gardens', 'Our Story', 'Impact'].map((item) => (
               <button 
                 key={item} 
@@ -1052,6 +1138,15 @@ export default function App() {
                 <span className="absolute -bottom-2 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full" style={{ backgroundColor: COLORS.goldenYellow }}></span>
               </button>
             ))}
+            {/* Enquiries Button */}
+            <button
+              onClick={() => navigate('/enquiry')}
+              className="hover:opacity-70 transition-opacity relative group"
+              style={{ color: COLORS.darkGreen }}
+            >
+              Enquiries
+              <span className="absolute -bottom-2 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full" style={{ backgroundColor: COLORS.goldenYellow }}></span>
+            </button>
             {/* Cart Icon */}
             <button
               onClick={() => navigate('/enquiry')}
@@ -1107,6 +1202,15 @@ export default function App() {
                 {item}
               </button>
             ))}
+            <button 
+              onClick={() => {
+                setIsMenuOpen(false);
+                navigate('/enquiry');
+              }}
+              className="text-xl font-serif text-left"
+            >
+              Enquiries
+            </button>
           </div>
         )}
       </nav>
@@ -1115,19 +1219,16 @@ export default function App() {
         <Route path="/" element={
             <>
               {/* --- Hero Section --- */}
-              <HeroSection scrollToSection={scrollToSection} />
+              <HeroSection scrollToSection={scrollToSection} navigate={navigate} />
 
               {/* --- Products Section --- */}
-              <section id="collection" className="pt-6 md:pt-10 pb-12 md:pb-20 relative z-10 overflow-visible">
-                <h2 
-                  className="text-2xl md:text-4xl font-serif font-bold mb-3 md:mb-4 text-center"
-                  style={{ color: COLORS.darkGreen }}
-                >
+              <section id="collection" className="pt-4 md:pt-6 pb-8 md:pb-12 relative z-10 overflow-visible">
+                <SectionHeading align="center" className="mb-2">
                   Collection
-                </h2>
+                </SectionHeading>
                 <ProductCarousel onProductClick={handleProductClick} />
                 
-                <div className="flex justify-center mt-8 md:mt-10">
+                <div className="flex justify-center mt-6 md:mt-8">
                     <Link 
                         to="/all-products" 
                         className="inline-flex items-center justify-center px-6 py-3 rounded-full text-white font-semibold text-sm tracking-wide shadow-lg transition-all hover:scale-105"
@@ -1153,12 +1254,9 @@ export default function App() {
               {/* --- Our Tea Gardens Section --- */}
               <section id="our-tea-gardens" className="pt-6 md:pt-10 pb-12 md:pb-20 bg-white relative z-10">
                 <div className="max-w-7xl mx-auto px-6">
-                  <h2 
-                    className="text-2xl md:text-4xl font-serif font-bold mb-3 md:mb-4 text-center"
-                    style={{ color: COLORS.darkGreen }}
-                  >
+                  <SectionHeading align="center" className="mb-3 md:mb-4">
                     Our Tea Gardens
-                  </h2>
+                  </SectionHeading>
                   <p className="text-center max-w-3xl mx-auto mb-8 md:mb-10 text-base md:text-lg text-gray-700">
                      Discover the soul of Darjeeling through the unique offerings of seven remarkable tea estates. 
                      Each garden tells a story—of tradition, craftsmanship, and the women who bring these creations to life.
@@ -1329,7 +1427,7 @@ export default function App() {
                 <Leaf className="hidden md:block absolute top-10 right-10 w-64 h-64 text-green-800 opacity-5 rotate-45" />
 
                 <div className="max-w-7xl mx-auto px-6">
-                  <div className="grid md:grid-cols-2 gap-6 md:gap-8 items-center">
+                  <div className="grid md:grid-cols-2 gap-6 md:gap-8 items-start">
                     <div className="relative group">
                       {/* Decorative floating elements */}
                       <div className="absolute -top-4 -left-4 w-16 h-16 md:w-20 md:h-20 rounded-full opacity-20 blur-xl transition-all duration-700 group-hover:opacity-30 group-hover:scale-110" style={{ backgroundColor: COLORS.goldenYellow }}></div>
@@ -1377,12 +1475,9 @@ export default function App() {
                     
                     <div>
                       <h3 className="text-sm font-bold tracking-widest uppercase mb-1.5" style={{ color: COLORS.goldenYellow }}>Our Origins</h3>
-                      <h2 
-                        className="text-2xl md:text-4xl font-serif font-bold mb-4 md:mb-5 text-left"
-                        style={{ color: COLORS.darkGreen }}
-                      >
+                      <SectionHeading align="left" className="mb-4 md:mb-5">
                         Rooted in Darjeeling
-                      </h2>
+                      </SectionHeading>
                       
                       <div className="space-y-3 text-sm md:text-base leading-relaxed text-gray-700">
                         <p>
@@ -1392,7 +1487,7 @@ export default function App() {
                           With limited options and no alternative skills, communities faced deep uncertainty. Supported by the Gates Foundation and in partnership with the Darjeeling Welfare Society, the Gorkhaland Territorial Administration, the West Bengal State Rural Livelihoods Mission, and Grant Thornton Bharat, a mission was launched to restore livelihoods.
                         </p>
                         <p>
-                          <strong style={{ color: COLORS.darkGreen }}>Gharelu Origins</strong> is the result of these efforts—a brand born of heritage, heart, and the unwavering spirit of Darjeeling’s people. From their homes, women now craft the finest products, reviving income, dignity, and hope.
+                          <strong style={{ color: COLORS.darkGreen }}>Gharelu Origins</strong> is the result of these efforts—a brand born of heritage, heart, and the unwavering spirit of Darjeeling's people. From their homes, women now craft the finest products, reviving income, dignity, and hope.
                         </p>
                       </div>
                     </div>
@@ -1405,12 +1500,9 @@ export default function App() {
                 <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
                 
                 <div className="max-w-7xl mx-auto px-6 relative z-10">
-                  <h2 
-                    className="text-2xl md:text-4xl font-serif font-bold mb-3 md:mb-4 text-center"
-                    style={{ color: COLORS.darkGreen }}
-                  >
+                  <SectionHeading align="center" className="mb-3 md:mb-4">
                     Our Impact
-                  </h2>
+                  </SectionHeading>
                   <p className="text-center max-w-3xl mx-auto mb-6 md:mb-8 text-base md:text-lg">
                      Over 5,000 households touched through training and support to create unique, value-added products using local resources. We are reviving income, dignity, and hope for the communities of Darjeeling.
                   </p>
@@ -1467,11 +1559,10 @@ export default function App() {
           {/* Column 1: Info & Social */}
           <div className="md:col-span-1">
              <div className="flex items-center space-x-2 mb-3">
-                <Leaf className="text-white" size={58} />
-                <span className="font-serif font-bold text-base tracking-wider">GHARELU ORIGINS</span>
+                <img src="/assets/footer_logo.svg" alt="Gharelu Origins" className="h-14" />
              </div>
              <p className="text-green-200 text-xs leading-relaxed mb-4">
-               Rooted in Darjeeling, Grown with Purpose. Bringing the Himalayas to your doorstep.
+               Rooted in Darjeeling, Grown with Purpose.
              </p>
              <div className="flex space-x-3">
                {SOCIAL_LINKS.map((social, i) => (
@@ -1493,7 +1584,7 @@ export default function App() {
             <h4 className="font-bold mb-3 text-green-300 uppercase tracking-widest text-xs">Company</h4>
             <ul className="space-y-2 text-green-100 text-xs">
               <li><a href="#" className="hover:text-white transition-colors">About Us</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Privacy Policy</a></li>
+              <li><Link to="/enquiry" className="hover:text-white transition-colors">Enquiries</Link></li>
             </ul>
           </div>
 
@@ -1501,19 +1592,23 @@ export default function App() {
           <div>
             <h4 className="font-bold mb-3 text-green-300 uppercase tracking-widest text-xs">Newsletter</h4>
             <p className="text-green-200 text-xs mb-3">Join our community for harvest updates.</p>
-            <div className="flex">
+            <form onSubmit={handleNewsletterSubmit} className="flex">
               <input 
                 type="email" 
                 placeholder="Your email" 
+                value={newsletterEmail}
+                onChange={(e) => setNewsletterEmail(e.target.value)}
                 className="w-full px-3 py-2 text-xs rounded-l-lg bg-green-800 border-none text-white placeholder-green-400 focus:ring-2 focus:ring-yellow-500 focus:outline-none"
+                required
               />
               <button 
+                type="submit"
                 className="px-4 py-2 text-xs rounded-r-lg font-bold transition-colors hover:bg-yellow-400"
                 style={{ backgroundColor: COLORS.goldenYellow, color: COLORS.darkGreen }}
               >
                 Join
               </button>
-            </div>
+            </form>
           </div>
         </div>
         <div className="max-w-7xl mx-auto pt-4 text-center text-green-400 text-xs">
@@ -1521,6 +1616,50 @@ export default function App() {
         </div>
       </footer>
       )}
+
+      {/* Newsletter Toast Notification */}
+      <AnimatePresence>
+        {showNewsletterToast && (
+          <motion.div
+            initial={{ opacity: 0, y: 50, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 50, scale: 0.9 }}
+            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+            className="fixed bottom-8 right-8 z-[200] max-w-sm"
+          >
+            <div 
+              className="bg-white rounded-2xl shadow-2xl p-6 border-2 flex items-center gap-4"
+              style={{ 
+                borderColor: COLORS.goldenYellow,
+                boxShadow: `0 10px 40px ${COLORS.darkGreen}30`
+              }}
+            >
+              <div 
+                className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0"
+                style={{ backgroundColor: `${COLORS.goldenYellow}20` }}
+              >
+                <CheckCircle size={24} style={{ color: COLORS.goldenYellow }} />
+              </div>
+              <div className="flex-1">
+                <h4 className="font-bold text-base mb-1" style={{ color: COLORS.darkGreen }}>
+                  Successfully Subscribed!
+                </h4>
+                <p className="text-sm text-gray-600">
+                  You've been added to our newsletter. Thank you for joining us!
+                </p>
+              </div>
+              <button
+                onClick={() => setShowNewsletterToast(false)}
+                className="flex-shrink-0 hover:opacity-70 transition-opacity"
+                style={{ color: COLORS.darkGreen }}
+                aria-label="Close"
+              >
+                <X size={20} />
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

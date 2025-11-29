@@ -158,7 +158,7 @@ export const PRODUCTS = [
   },
   {
     id: 13,
-    name: "Fini",
+    name: "Feni",
     category: "Snacks",
     image: "/assets/Fini.png",
     desc: "A regional crunchy snack made using traditional spices - a salty, spicy burst of flavor in every bite",
@@ -167,16 +167,6 @@ export const PRODUCTS = [
     ],
     inStock: true,
     teaGarden: "Samrikpani Tea Estate"
-  },
-  {
-    id: 14,
-    name: "Sustainable Plates and Bowls",
-    category: "Crafts",
-    image: "/assets/Sustainable_Plates_and_Bowls.png",
-    desc: "Meticulously shaped from natural, biodegradable materials, our current range features beautifully designed bowls and quarter plates. These pieces offer a unique, rustic charm, perfect for conscious consumers seeking an eco-friendly dining experience.",
-    variants: [],
-    inStock: false,
-    teaGarden: "Panighata Tea Estate"
   }
 ];
 

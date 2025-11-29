@@ -1,7 +1,31 @@
 import React, { useState } from 'react';
+import { Leaf } from 'lucide-react';
 import { COLORS } from './constants';
 import AllProductsGrid from './AllProductsGrid';
 import ProductDetailModal from './ProductDetailModal';
+
+const SectionHeading = ({ children, align = "center", className = "" }) => (
+  <div className={`flex flex-col ${align === 'center' ? 'items-center' : 'items-start'} ${className}`}>
+    <h2
+      className="text-2xl md:text-4xl font-serif font-bold"
+      style={{ color: COLORS.darkGreen }}
+    >
+      {children}
+    </h2>
+    {align === 'center' ? (
+      <div className="mt-2 flex items-center gap-3">
+        <div className="w-12 h-px" style={{ backgroundColor: `${COLORS.goldenYellow}B3` }} />
+        <Leaf className="text-golden-yellow" size={20} strokeWidth={2} style={{ color: COLORS.goldenYellow }} />
+        <div className="w-12 h-px" style={{ backgroundColor: `${COLORS.goldenYellow}B3` }} />
+      </div>
+    ) : (
+      <div className="mt-2 flex items-center gap-3">
+        <Leaf className="text-golden-yellow" size={20} strokeWidth={2} style={{ color: COLORS.goldenYellow }} />
+        <div className="w-24 h-px" style={{ backgroundColor: `${COLORS.goldenYellow}B3` }} />
+      </div>
+    )}
+  </div>
+);
 
 const AllProductsPage = ({ cart, addToCart, updateQuantity, removeFromCart }) => {
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -20,12 +44,9 @@ const AllProductsPage = ({ cart, addToCart, updateQuantity, removeFromCart }) =>
   return (
     <div className="min-h-screen pt-24 pb-12" style={{ backgroundColor: COLORS.cream }}>
        <div className="max-w-7xl mx-auto px-6">
-        <h2 
-          className="text-3xl md:text-5xl font-serif font-bold mb-8 text-center"
-          style={{ color: COLORS.darkGreen }}
-        >
+        <SectionHeading align="center" className="mb-8">
           All Products
-        </h2>
+        </SectionHeading>
         
         <AllProductsGrid onProductClick={handleProductClick} />
         

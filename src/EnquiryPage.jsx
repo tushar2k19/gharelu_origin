@@ -5,6 +5,29 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { COLORS } from './constants';
 
+const SectionHeading = ({ children, align = "center", className = "" }) => (
+  <div className={`flex flex-col ${align === 'center' ? 'items-center' : 'items-start'} ${className}`}>
+    <h2
+      className="text-2xl md:text-4xl font-serif font-bold"
+      style={{ color: COLORS.darkGreen }}
+    >
+      {children}
+    </h2>
+    {align === 'center' ? (
+      <div className="mt-2 flex items-center gap-3">
+        <div className="w-12 h-px" style={{ backgroundColor: `${COLORS.goldenYellow}B3` }} />
+        <Leaf className="text-golden-yellow" size={20} strokeWidth={2} style={{ color: COLORS.goldenYellow }} />
+        <div className="w-12 h-px" style={{ backgroundColor: `${COLORS.goldenYellow}B3` }} />
+      </div>
+    ) : (
+      <div className="mt-2 flex items-center gap-3">
+        <Leaf className="text-golden-yellow" size={20} strokeWidth={2} style={{ color: COLORS.goldenYellow }} />
+        <div className="w-24 h-px" style={{ backgroundColor: `${COLORS.goldenYellow}B3` }} />
+      </div>
+    )}
+  </div>
+);
+
 const EnquiryPage = ({ cart, removeFromCart, updateQuantity, clearCart, onBackToHome }) => {
   const [formData, setFormData] = useState({
     name: '',
@@ -278,12 +301,43 @@ const EnquiryPage = ({ cart, removeFromCart, updateQuantity, clearCart, onBackTo
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <h1 className="text-4xl md:text-6xl font-serif font-bold mb-4" style={{ color: COLORS.darkGreen }}>
+            <SectionHeading align="center" className="mb-6">
               Enquiry & Bag
-            </h1>
-            <p className="text-gray-600 max-w-2xl mx-auto text-lg">
-              Review your selected items or simply send us a message. We're here to help with your order.
-            </p>
+            </SectionHeading>
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="max-w-2xl mx-auto mb-8"
+            >
+              <div className="relative bg-gradient-to-r from-green-50 via-cream to-green-50 rounded-2xl p-6 border-2 shadow-lg"
+                   style={{ 
+                     borderColor: `${COLORS.goldenYellow}40`,
+                     backgroundColor: COLORS.cream,
+                     boxShadow: `0 4px 20px ${COLORS.darkGreen}10`
+                   }}>
+                {/* Decorative corner accents */}
+                <div className="absolute top-3 left-3 w-6 h-6 border-t-2 border-l-2 rounded-tl-lg opacity-30" style={{ borderColor: COLORS.goldenYellow }}></div>
+                <div className="absolute top-3 right-3 w-6 h-6 border-t-2 border-r-2 rounded-tr-lg opacity-30" style={{ borderColor: COLORS.goldenYellow }}></div>
+                <div className="absolute bottom-3 left-3 w-6 h-6 border-b-2 border-l-2 rounded-bl-lg opacity-30" style={{ borderColor: COLORS.goldenYellow }}></div>
+                <div className="absolute bottom-3 right-3 w-6 h-6 border-b-2 border-r-2 rounded-br-lg opacity-30" style={{ borderColor: COLORS.goldenYellow }}></div>
+                
+                <div className="flex items-start gap-4 relative z-10">
+                  <div className="flex-shrink-0 mt-1">
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center shadow-md"
+                         style={{ backgroundColor: `${COLORS.goldenYellow}20` }}>
+                      <MessageSquare size={20} style={{ color: COLORS.darkGreen }} strokeWidth={2} />
+                    </div>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-gray-700 text-base md:text-lg leading-relaxed font-medium"
+                       style={{ color: COLORS.darkGreen }}>
+                      Review your selected items or simply send us a message. We're here to help with your order.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
           </motion.div>
         </div>
 
@@ -293,7 +347,7 @@ const EnquiryPage = ({ cart, removeFromCart, updateQuantity, clearCart, onBackTo
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
+              transition={{ duration: 0.25, delay: 0.1 }}
             >
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-2xl font-serif font-bold flex items-center gap-2" style={{ color: COLORS.darkGreen }}>
@@ -334,7 +388,7 @@ const EnquiryPage = ({ cart, removeFromCart, updateQuantity, clearCart, onBackTo
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, x: -20 }}
-                        transition={{ duration: 0.4, delay: idx * 0.1 }}
+                        transition={{ duration: 0.2, delay: idx * 0.05 }}
                         className="bg-white rounded-2xl p-4 md:p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-shadow duration-300 relative overflow-hidden"
                       >
                          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-yellow-50 to-transparent rounded-bl-full opacity-50 pointer-events-none" />
@@ -435,7 +489,7 @@ const EnquiryPage = ({ cart, removeFromCart, updateQuantity, clearCart, onBackTo
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
+              transition={{ duration: 0.25, delay: 0.15 }}
               className="bg-white rounded-3xl shadow-2xl p-6 md:p-8 border border-gray-100 relative overflow-hidden"
             >
               <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-green-800 via-green-600 to-yellow-400" />

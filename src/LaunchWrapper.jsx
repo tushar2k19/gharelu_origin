@@ -213,7 +213,7 @@ const LaunchWrapper = ({ onComplete }) => {
                 animate={{ opacity: 1, y: 0 }}
                 className="text-white/80 text-2xl font-serif italic tracking-widest"
               >
-                PREPARING FOR TAKEOFF
+                BRINGING COMMUNITY TO LIFE…
               </motion.p>
             </motion.div>
           )}

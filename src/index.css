@@ -2,10 +2,36 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom font for the project (Inter is the default for Tailwind, but ensuring good practice) */
+/* Custom Font Declarations */
+@font-face {
+  font-family: 'New Order';
+  src: url('/assets/New Order (1).otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Benton Mod Display';
+  src: url('/assets/BentonModDisp-Black.otf') format('opentype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Apply fonts globally */
 @layer base {
   html {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Benton Mod Display', sans-serif;
+  }
+  
+  /* Headings and bold text use New Order */
+  h1, h2, h3, h4, h5, h6,
+  .font-serif,
+  strong, b,
+  [class*="font-bold"],
+  [class*="font-black"] {
+    font-family: 'New Order', serif;
   }
 }
 

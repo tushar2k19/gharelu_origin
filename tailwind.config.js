@@ -7,9 +7,10 @@ export default {
     theme: {
       extend: {
         fontFamily: {
-          // Assuming a serif font is used based on the code's styling
-          serif: ['Georgia', 'serif'], 
-          sans: ['Inter', 'sans-serif'],
+          // New Order for headings and bold text
+          serif: ['New Order', 'serif'], 
+          // Benton Mod Display for body text
+          sans: ['Benton Mod Display', 'sans-serif'],
         },
         colors: {
           'dark-green': '#034225',
