@@ -352,7 +352,7 @@ const HeroSection = ({ scrollToSection, navigate }) => {
   return (
     <header 
       ref={heroRef}
-      className="relative w-full min-h-[75vh] sm:min-h-[80vh] md:min-h-[85vh] overflow-hidden z-10 flex items-center pt-16 md:pt-20"
+      className="relative w-full min-h-screen overflow-hidden z-10 flex items-center pt-16 md:pt-20"
       role="banner"
       aria-label="Hero section"
     >
@@ -911,32 +911,87 @@ export default function App() {
         return;
     }
 
-    const element = document.getElementById(id);
-    if (element) {
-      const navHeight = 80; // Approximate nav height
-      const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
-      const offsetPosition = elementPosition - navHeight;
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth'
+    // Use requestAnimationFrame to ensure DOM is ready and layout is complete
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const element = document.getElementById(id);
+        if (element) {
+          // Dynamically get the actual nav height
+          const nav = document.querySelector('nav');
+          const navHeight = nav ? nav.offsetHeight : 80;
+          
+          // Method 1: Use offsetTop (most reliable for static positioning)
+          let elementTop = 0;
+          let currentElement = element;
+          while (currentElement && currentElement !== document.body) {
+            elementTop += currentElement.offsetTop;
+            currentElement = currentElement.offsetParent;
+          }
+          
+          // Method 2: Use getBoundingClientRect as fallback
+          const rect = element.getBoundingClientRect();
+          const scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
+          const elementTopFromRect = rect.top + scrollTop;
+          
+          // Use offsetTop if available, otherwise fallback to getBoundingClientRect
+          const finalElementTop = elementTop > 0 ? elementTop : elementTopFromRect;
+          
+          // Calculate scroll position: element top minus nav height
+          // This positions the section's top edge (including any padding-top) right below the fixed header
+          // Add a small buffer (1px) to ensure no content from previous section is visible
+          const offsetPosition = finalElementTop - navHeight +5;
+          
+          // Scroll to the calculated position
+          window.scrollTo({
+            top: Math.max(0, Math.round(offsetPosition)), // Round to avoid sub-pixel issues
+            behavior: 'smooth'
+          });
+        }
       });
-    }
+    });
   };
 
   useEffect(() => {
     if (location.pathname === '/' && location.state?.scrollTo) {
         const id = location.state.scrollTo;
+        // Use longer timeout to ensure page is fully rendered and all sections are laid out
         setTimeout(() => {
-            const element = document.getElementById(id);
-            if (element) {
-                const navHeight = 80;
-                const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
-                const offsetPosition = elementPosition - navHeight;
-                window.scrollTo({
-                    top: offsetPosition,
-                    behavior: 'smooth'
-                });
-            }
+            requestAnimationFrame(() => {
+              requestAnimationFrame(() => {
+                const element = document.getElementById(id);
+                if (element) {
+                    // Dynamically get the actual nav height
+                    const nav = document.querySelector('nav');
+                    const navHeight = nav ? nav.offsetHeight : 80;
+                    
+                    // Method 1: Use offsetTop (most reliable for static positioning)
+                    let elementTop = 0;
+                    let currentElement = element;
+                    while (currentElement && currentElement !== document.body) {
+                      elementTop += currentElement.offsetTop;
+                      currentElement = currentElement.offsetParent;
+                    }
+                    
+                    // Method 2: Use getBoundingClientRect as fallback
+                    const rect = element.getBoundingClientRect();
+                    const scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
+                    const elementTopFromRect = rect.top + scrollTop;
+                    
+                    // Use offsetTop if available, otherwise fallback to getBoundingClientRect
+                    const finalElementTop = elementTop > 0 ? elementTop : elementTopFromRect;
+                    
+                    // Calculate scroll position: element top minus nav height
+                    // Add a small buffer (1px) to ensure no content from previous section is visible
+                    const offsetPosition = finalElementTop - navHeight - 1;
+                    
+                    // Scroll to the calculated position
+                    window.scrollTo({
+                        top: Math.max(0, Math.round(offsetPosition)), // Round to avoid sub-pixel issues
+                        behavior: 'smooth'
+                    });
+                }
+              });
+            });
         }, 300);
         // Clear state by replacing history? Or just let it be. 
         // Clearing it prevents scrolling on reload, which is good.
@@ -1240,7 +1295,7 @@ export default function App() {
               <HeroSection scrollToSection={scrollToSection} navigate={navigate} />
 
               {/* --- Products Section --- */}
-              <section id="collection" className="pt-4 md:pt-6 pb-8 md:pb-12 relative z-10 overflow-visible">
+              <section id="collection" className="pt-8 md:pt-12 pb-8 md:pb-12 relative z-10 overflow-visible">
                 <SectionHeading align="center" className="mb-2">
                   Collection
                 </SectionHeading>

@@ -304,7 +304,9 @@ const EnquiryPage = ({ cart, removeFromCart, updateQuantity, clearCart, onBackTo
         <Leaf size={192} color={COLORS.goldenYellow} />
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-12 md:py-20 relative z-10">
+      {/* Main content container with padding-top to account for fixed header */}
+      {/* Header height: ~64px mobile (4rem), ~72px desktop (4.5rem) */}
+      <div className="max-w-7xl mx-auto px-6 pt-16 md:pt-20 pb-12 md:pb-20 relative z-10">
         {/* Header */}
         <div className="mb-10 md:mb-16 text-center">
           <motion.div 
