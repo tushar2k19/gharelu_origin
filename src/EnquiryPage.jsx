@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { X, Plus, Minus, ShoppingBag, ArrowLeft, Mail, Phone, User, MessageSquare, ChevronRight, AlertCircle, CheckCircle, Leaf, Info } from 'lucide-react';
+import { X, Plus, Minus, ShoppingBag, ArrowLeft, Mail, Phone, User, MessageSquare, ChevronRight, AlertCircle, CheckCircle, Leaf, Info, Rocket } from 'lucide-react';
 import emailjs from '@emailjs/browser';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -29,6 +29,299 @@ const SectionHeading = ({ children, align = "center", className = "" }) => (
   </div>
 );
 
+// World-class Loader Overlay Component
+const LoaderOverlay = ({ isVisible, showSuccess = false }) => {
+  return (
+    <AnimatePresence mode="wait">
+      {isVisible && (
+        <>
+          {/* Backdrop */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-[9999] bg-black/40 backdrop-blur-sm"
+          />
+          
+          {/* Loading State */}
+          {!showSuccess && (
+            <motion.div
+              key="loading"
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.8, y: -20 }}
+              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+              className="fixed inset-0 z-[10000] flex items-center justify-center p-4"
+            >
+              <div className="relative">
+                {/* Main Loader Card */}
+                <div 
+                  className="relative bg-white rounded-3xl shadow-2xl p-8 md:p-12 max-w-md w-full border-2"
+                  style={{ 
+                    borderColor: `${COLORS.goldenYellow}40`,
+                    boxShadow: `0 20px 60px ${COLORS.darkGreen}30, 0 0 0 1px ${COLORS.goldenYellow}20`
+                  }}
+                >
+                  {/* Decorative corner accents */}
+                  <div className="absolute top-4 left-4 w-6 h-6 border-t-2 border-l-2 rounded-tl-lg opacity-30" style={{ borderColor: COLORS.goldenYellow }}></div>
+                  <div className="absolute top-4 right-4 w-6 h-6 border-t-2 border-r-2 rounded-tr-lg opacity-30" style={{ borderColor: COLORS.goldenYellow }}></div>
+                  <div className="absolute bottom-4 left-4 w-6 h-6 border-b-2 border-l-2 rounded-bl-lg opacity-30" style={{ borderColor: COLORS.goldenYellow }}></div>
+                  <div className="absolute bottom-4 right-4 w-6 h-6 border-b-2 border-r-2 rounded-br-lg opacity-30" style={{ borderColor: COLORS.goldenYellow }}></div>
+                  
+                  {/* Content */}
+                  <div className="relative z-10 flex flex-col items-center">
+                    {/* Animated Spinner */}
+                    <div className="relative mb-6">
+                      {/* Outer rotating ring */}
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                        className="w-20 h-20 md:w-24 md:h-24 rounded-full border-4"
+                        style={{ 
+                          borderColor: `${COLORS.darkGreen}20`,
+                          borderTopColor: COLORS.darkGreen,
+                          borderRightColor: COLORS.darkGreen
+                        }}
+                      />
+                      {/* Inner pulsing circle */}
+                      <motion.div
+                        animate={{ scale: [1, 1.2, 1], opacity: [0.7, 1, 0.7] }}
+                        transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                        className="absolute inset-0 flex items-center justify-center"
+                      >
+                        <div 
+                          className="w-12 h-12 md:w-16 md:h-16 rounded-full"
+                          style={{ backgroundColor: `${COLORS.goldenYellow}30` }}
+                        />
+                      </motion.div>
+                      {/* Center icon */}
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <motion.div
+                          animate={{ rotate: [0, 10, -10, 0] }}
+                          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                        >
+                          <Mail 
+                            size={32} 
+                            className="md:w-10 md:h-10"
+                            style={{ color: COLORS.darkGreen }}
+                            strokeWidth={2}
+                          />
+                        </motion.div>
+                      </div>
+                    </div>
+
+                    {/* Floating tea leaves */}
+                    <div className="absolute -top-8 -left-8 opacity-20">
+                      <motion.div
+                        animate={{ 
+                          y: [0, -10, 0],
+                          rotate: [0, 15, 0]
+                        }}
+                        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                      >
+                        <Leaf size={24} style={{ color: COLORS.darkGreen }} />
+                      </motion.div>
+                    </div>
+                    <div className="absolute -top-6 -right-6 opacity-20">
+                      <motion.div
+                        animate={{ 
+                          y: [0, -8, 0],
+                          rotate: [0, -15, 0]
+                        }}
+                        transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+                      >
+                        <Leaf size={20} style={{ color: COLORS.goldenYellow }} />
+                      </motion.div>
+                    </div>
+                    <div className="absolute -bottom-6 left-4 opacity-20">
+                      <motion.div
+                        animate={{ 
+                          y: [0, -6, 0],
+                          rotate: [0, 10, 0]
+                        }}
+                        transition={{ duration: 2.8, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                      >
+                        <Leaf size={18} style={{ color: COLORS.darkGreen }} />
+                      </motion.div>
+                    </div>
+
+                    {/* Loading Text */}
+                    <motion.h3
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.2 }}
+                      className="text-2xl md:text-3xl font-serif font-bold mb-3 text-center"
+                      style={{ color: COLORS.darkGreen }}
+                    >
+                      Sending Your Enquiry
+                    </motion.h3>
+                    
+                    <motion.p
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.3 }}
+                      className="text-sm md:text-base text-gray-600 text-center mb-6"
+                    >
+                      Please wait while we process your request...
+                    </motion.p>
+
+                    {/* Animated dots */}
+                    <div className="flex items-center gap-2">
+                      {[0, 1, 2].map((i) => (
+                        <motion.div
+                          key={i}
+                          animate={{ 
+                            scale: [1, 1.3, 1],
+                            opacity: [0.5, 1, 0.5]
+                          }}
+                          transition={{ 
+                            duration: 1.2,
+                            repeat: Infinity,
+                            delay: i * 0.2,
+                            ease: "easeInOut"
+                          }}
+                          className="w-2 h-2 rounded-full"
+                          style={{ backgroundColor: COLORS.goldenYellow }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Shimmer effect */}
+                  <motion.div
+                    animate={{ x: ['-100%', '200%'] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                    className="absolute inset-0 -z-0 opacity-20"
+                    style={{
+                      background: `linear-gradient(90deg, transparent, ${COLORS.goldenYellow}40, transparent)`,
+                      transform: 'skewX(-20deg)'
+                    }}
+                  />
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Success Rocket Animation */}
+          {showSuccess && (
+            <motion.div
+              key="success"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="fixed inset-0 z-[10000] flex items-center justify-center overflow-hidden"
+            >
+              {/* Success message container */}
+              <div className="relative flex flex-col items-center justify-center">
+                {/* Rocket Animation */}
+                <motion.div
+                  initial={{ y: 100, opacity: 0, scale: 0.8 }}
+                  animate={{ 
+                    y: -1500, 
+                    opacity: [0, 1, 1, 0],
+                    scale: [0.8, 1.2, 1.5, 2]
+                  }}
+                  transition={{ 
+                    duration: 1.8, 
+                    ease: [0.43, 0.13, 0.23, 0.96],
+                    opacity: { times: [0, 0.1, 0.7, 1] }
+                  }}
+                  className="absolute flex flex-col items-center"
+                >
+                  <div className="relative scale-150">
+                    {/* Rocket Body */}
+                    <Rocket 
+                      size={180} 
+                      color="white" 
+                      fill="white" 
+                      className="rotate-[-45deg] drop-shadow-[0_0_30px_rgba(255,255,255,0.5)]" 
+                    />
+                    
+                    {/* Advanced Engine Plume */}
+                    <motion.div 
+                      className="absolute top-[80%] left-[10%] w-24 h-64 rounded-full blur-xl origin-top"
+                      style={{ background: 'linear-gradient(to bottom, #fff, #ffff00, #ff4500, transparent)' }}
+                      animate={{ 
+                        scaleY: [1, 1.5, 0.8, 1.2],
+                        opacity: [0.8, 1, 0.8]
+                      }}
+                      transition={{ repeat: Infinity, duration: 0.1 }}
+                    />
+                    
+                    {/* Shockwave rings */}
+                    <motion.div 
+                      className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 rounded-full border-4 border-white/50"
+                      animate={{ scale: [0.5, 2], opacity: [1, 0], borderWidth: [4, 0] }}
+                      transition={{ repeat: Infinity, duration: 0.5 }}
+                    />
+                  </div>
+                </motion.div>
+
+                {/* Success Text */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3, duration: 0.5 }}
+                  className="mt-32 text-center"
+                >
+                  <motion.h3
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: 0.4, type: "spring", stiffness: 200 }}
+                    className="text-3xl md:text-4xl font-serif font-bold mb-2"
+                    style={{ 
+                      color: COLORS.goldenYellow,
+                      textShadow: `0 0 20px ${COLORS.goldenYellow}60`
+                    }}
+                  >
+                    Enquiry Sent!
+                  </motion.h3>
+                  <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.6 }}
+                    className="text-white/90 text-lg md:text-xl font-medium"
+                  >
+                    Your message is on its way
+                  </motion.p>
+                </motion.div>
+
+                {/* Floating success particles */}
+                {[...Array(12)].map((_, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ 
+                      x: 0, 
+                      y: 0, 
+                      opacity: 1,
+                      scale: 0
+                    }}
+                    animate={{ 
+                      x: (Math.random() - 0.5) * 400,
+                      y: (Math.random() - 0.5) * 400,
+                      opacity: [1, 0],
+                      scale: [0, 1, 0]
+                    }}
+                    transition={{ 
+                      duration: 1.5,
+                      delay: 0.2 + i * 0.1,
+                      ease: "easeOut"
+                    }}
+                    className="absolute w-2 h-2 rounded-full"
+                    style={{ backgroundColor: COLORS.goldenYellow }}
+                  />
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </>
+      )}
+    </AnimatePresence>
+  );
+};
+
 const EnquiryPage = ({ cart, removeFromCart, updateQuantity, clearCart, onBackToHome }) => {
   const [formData, setFormData] = useState({
     name: '',
@@ -40,6 +333,7 @@ const EnquiryPage = ({ cart, removeFromCart, updateQuantity, clearCart, onBackTo
   const [submitStatus, setSubmitStatus] = useState(null); // 'success' or 'error'
   const [errors, setErrors] = useState({});
   const [showEmptyBagWarning, setShowEmptyBagWarning] = useState(false);
+  const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
 
   const formRef = useRef(null);
 
@@ -252,6 +546,7 @@ const EnquiryPage = ({ cart, removeFromCart, updateQuantity, clearCart, onBackTo
         reply_to: formData.email,
       };
 
+      // Send email using EmailJS
       const result = await emailjs.send(
         'service_bbnpyrh',
         'template_t6gf4mj',
@@ -260,18 +555,26 @@ const EnquiryPage = ({ cart, removeFromCart, updateQuantity, clearCart, onBackTo
       );
 
       if (result.status === 200) {
-        setSubmitStatus('success');
-        clearCart();
-        setFormData({ name: '', email: '', phone: '', message: '' });
-        setTimeout(() => setSubmitStatus(null), 5000);
+        // Show success rocket animation
+        setShowSuccessAnimation(true);
+        
+        // Wait for rocket animation to complete (1.8s animation + 0.5s buffer)
+        setTimeout(() => {
+          setIsSubmitting(false);
+          setShowSuccessAnimation(false);
+          setSubmitStatus('success');
+          clearCart();
+          setFormData({ name: '', email: '', phone: '', message: '' });
+          setTimeout(() => setSubmitStatus(null), 5000);
+        }, 2300); // 1.8s animation + 0.5s buffer
       } else {
         throw new Error('Failed to send email');
       }
     } catch (error) {
       console.error('Email error:', error);
-      setSubmitStatus('error');
-    } finally {
       setIsSubmitting(false);
+      setShowSuccessAnimation(false);
+      setSubmitStatus('error');
     }
   };
 
@@ -714,6 +1017,9 @@ const EnquiryPage = ({ cart, removeFromCart, updateQuantity, clearCart, onBackTo
           </div>
         )}
       </AnimatePresence>
+
+      {/* World-class Loader Overlay */}
+      <LoaderOverlay isVisible={isSubmitting} showSuccess={showSuccessAnimation} />
     </div>
   );
 };
