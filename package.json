@@ -10,6 +10,7 @@
     },
     "dependencies": {
         "@emailjs/browser": "^4.4.1",
+        "@radix-ui/react-tooltip": "^1.2.8",
         "framer-motion": "^10.16.16",
         "lottie-react": "^2.4.0",
         "lucide-react": "^0.309.0",

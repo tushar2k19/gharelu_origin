@@ -939,7 +939,7 @@ export default function App() {
           // Calculate scroll position: element top minus nav height
           // This positions the section's top edge (including any padding-top) right below the fixed header
           // Add a small buffer (1px) to ensure no content from previous section is visible
-          const offsetPosition = finalElementTop - navHeight +5;
+          const offsetPosition = finalElementTop - navHeight +5
           
           // Scroll to the calculated position
           window.scrollTo({

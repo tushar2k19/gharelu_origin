@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { X, Plus, Minus, ShoppingBag, ArrowLeft, Mail, Phone, User, MessageSquare, ChevronRight, AlertCircle, CheckCircle, Leaf } from 'lucide-react';
+import { X, Plus, Minus, ShoppingBag, ArrowLeft, Mail, Phone, User, MessageSquare, ChevronRight, AlertCircle, CheckCircle, Leaf, Info } from 'lucide-react';
 import emailjs from '@emailjs/browser';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { COLORS } from './constants';
+import * as Tooltip from '@radix-ui/react-tooltip';
 
 const SectionHeading = ({ children, align = "center", className = "" }) => (
   <div className={`flex flex-col ${align === 'center' ? 'items-center' : 'items-start'} ${className}`}>
@@ -313,44 +314,67 @@ const EnquiryPage = ({ cart, removeFromCart, updateQuantity, clearCart, onBackTo
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
+            className="relative inline-block"
           >
-            <SectionHeading align="center" className="mb-6">
-              Enquiry & Bag
-            </SectionHeading>
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="max-w-2xl mx-auto mb-8"
-            >
-              <div className="relative bg-gradient-to-r from-green-50 via-cream to-green-50 rounded-2xl p-6 border-2 shadow-lg"
-                   style={{ 
-                     borderColor: `${COLORS.goldenYellow}40`,
-                     backgroundColor: COLORS.cream,
-                     boxShadow: `0 4px 20px ${COLORS.darkGreen}10`
-                   }}>
-                {/* Decorative corner accents */}
-                <div className="absolute top-3 left-3 w-6 h-6 border-t-2 border-l-2 rounded-tl-lg opacity-30" style={{ borderColor: COLORS.goldenYellow }}></div>
-                <div className="absolute top-3 right-3 w-6 h-6 border-t-2 border-r-2 rounded-tr-lg opacity-30" style={{ borderColor: COLORS.goldenYellow }}></div>
-                <div className="absolute bottom-3 left-3 w-6 h-6 border-b-2 border-l-2 rounded-bl-lg opacity-30" style={{ borderColor: COLORS.goldenYellow }}></div>
-                <div className="absolute bottom-3 right-3 w-6 h-6 border-b-2 border-r-2 rounded-br-lg opacity-30" style={{ borderColor: COLORS.goldenYellow }}></div>
-                
-                <div className="flex items-start gap-4 relative z-10">
-                  <div className="flex-shrink-0 mt-1">
-                    <div className="w-10 h-10 rounded-full flex items-center justify-center shadow-md"
-                         style={{ backgroundColor: `${COLORS.goldenYellow}20` }}>
-                      <MessageSquare size={20} style={{ color: COLORS.darkGreen }} strokeWidth={2} />
-                    </div>
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-gray-700 text-base md:text-lg leading-relaxed font-medium"
-                       style={{ color: COLORS.darkGreen }}>
-                      Review your selected items or simply send us a message. We're here to help with your order.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
+            <div className="flex items-center justify-center gap-2 md:gap-3 mb-6 flex-wrap">
+              <SectionHeading align="center" className="mb-0">
+                Enquiry & Bag
+              </SectionHeading>
+              {/* Info Icon with Radix UI Tooltip */}
+              <Tooltip.Provider delayDuration={200}>
+                <Tooltip.Root>
+                  <Tooltip.Trigger asChild>
+                    <button
+                      className="w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center transition-all hover:scale-110 active:scale-95 cursor-pointer touch-manipulation"
+                      style={{ 
+                        backgroundColor: `${COLORS.goldenYellow}20`,
+                        color: COLORS.darkGreen
+                      }}
+                      aria-label="Show information"
+                    >
+                      <Info size={16} className="md:w-[18px] md:h-[18px]" strokeWidth={2.5} />
+                    </button>
+                  </Tooltip.Trigger>
+                  <Tooltip.Portal>
+                    <Tooltip.Content
+                      className="z-50 max-w-[min(calc(100vw-2rem),320px)] md:max-w-[min(calc(100vw-2rem),384px)] lg:max-w-[min(calc(100vw-2rem),448px)]"
+                      side="bottom"
+                      sideOffset={8}
+                      align="center"
+                      collisionPadding={16}
+                    >
+                      <div className="relative bg-gradient-to-r from-green-50 via-cream to-green-50 rounded-xl md:rounded-2xl p-4 md:p-6 border-2 shadow-xl"
+                           style={{ 
+                             borderColor: `${COLORS.goldenYellow}40`,
+                             backgroundColor: COLORS.cream,
+                             boxShadow: `0 8px 30px ${COLORS.darkGreen}20`
+                           }}>
+                        {/* Decorative corner accents - Smaller on mobile */}
+                        <div className="absolute top-2 left-2 md:top-3 md:left-3 w-4 h-4 md:w-6 md:h-6 border-t-2 border-l-2 rounded-tl-lg opacity-30" style={{ borderColor: COLORS.goldenYellow }}></div>
+                        <div className="absolute top-2 right-2 md:top-3 md:right-3 w-4 h-4 md:w-6 md:h-6 border-t-2 border-r-2 rounded-tr-lg opacity-30" style={{ borderColor: COLORS.goldenYellow }}></div>
+                        <div className="absolute bottom-2 left-2 md:bottom-3 md:left-3 w-4 h-4 md:w-6 md:h-6 border-b-2 border-l-2 rounded-bl-lg opacity-30" style={{ borderColor: COLORS.goldenYellow }}></div>
+                        <div className="absolute bottom-2 right-2 md:bottom-3 md:right-3 w-4 h-4 md:w-6 md:h-6 border-b-2 border-r-2 rounded-br-lg opacity-30" style={{ borderColor: COLORS.goldenYellow }}></div>
+                        
+                        <div className="flex items-start gap-3 md:gap-4 relative z-10">
+                          <div className="flex-shrink-0 mt-0.5 md:mt-1">
+                            <div className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center shadow-md"
+                                 style={{ backgroundColor: `${COLORS.goldenYellow}20` }}>
+                              <MessageSquare size={16} className="md:w-5 md:h-5" style={{ color: COLORS.darkGreen }} strokeWidth={2} />
+                            </div>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-gray-700 text-xs md:text-sm lg:text-base leading-relaxed font-medium break-words"
+                               style={{ color: COLORS.darkGreen }}>
+                              Review your selected items or simply send us a message. We're here to help with your order.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </Tooltip.Content>
+                  </Tooltip.Portal>
+                </Tooltip.Root>
+              </Tooltip.Provider>
+            </div>
           </motion.div>
         </div>
 
