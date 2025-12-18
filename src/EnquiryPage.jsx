@@ -537,7 +537,7 @@ const EnquiryPage = ({ cart, removeFromCart, updateQuantity, clearCart, onBackTo
       `;
 
       const templateParams = {
-        to_email: 'tushar01.jha@gmail.com', // or configured email
+        to_email: 'contact@ghareluorigins.in', // or configured email
         to_name: 'Gharelu Origins Team',
         from_name: formData.name,
         from_email: formData.email,

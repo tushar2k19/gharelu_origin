@@ -325,7 +325,7 @@ const Cart = ({ cart, removeFromCart, updateQuantity, clearCart, onBackToHome })
 
       // Template variables must match exactly what's in your EmailJS template
       const templateParams = {
-        to_email: 'tushar01.jha@gmail.com',
+        to_email: 'contact@ghareluorigins.in',
         to_name: 'Gharelu Origins Team',
         from_name: formData.name,
         from_email: formData.email,
